@@ -7,6 +7,7 @@ class Nexstar;
 class Bluetooth;
 class Settings;
 struct Command;
+class Processor;
 typedef 
 class Commands {
 public:
@@ -14,12 +15,14 @@ public:
   inline uint8_t *buffer() const { return _buffer; };
   inline size_t buffer_len() const { return _buffer_len; }
   void read();
+  inline void set_processor(Processor *processor) { this->processor = processor; }
 
 private:
   GPS &gps;
   Nexstar &nexstar;
   Bluetooth &bluetooth;
   Settings &settings;
+  Processor *processor;
   uint8_t _buffer[3];
   size_t _buffer_len;
   void handle(const String &command);

@@ -1,7 +1,7 @@
 #include "settings.h"
 #include <EEPROM.h>
 
-static const char *default_version = "v1.0.0";
+static const char *default_version = "v1.0.1";
 
 Settings::Settings() {
 }
@@ -9,12 +9,13 @@ Settings::Settings() {
 void Settings::load() {
   EEPROM.get(0, data);
   if(String(data.version) != default_version) {
-    Serial.println("Settings empty, loading defaults");
+    Serial.println(F("Settings empty, loading defaults"));
     strcpy(data.version, default_version);
     strcpy(data.bluetooth_pin, "0000");
     strcpy(data.bluetooth_name, "NexstarBT");
     data.timezone = 0;
     data.daylight_saving = 0;
+    data.gps_timeout = 5 * 60;
   }
 }
 

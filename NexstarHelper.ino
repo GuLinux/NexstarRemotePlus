@@ -5,6 +5,7 @@
 #include "nexstar.h"
 #include "commands.h"
 #include "settings.h"
+#include "processor.h"
 #include <DS1307RTC.h>
 
 // Wiring: green -> TX, blue -> RX
@@ -20,6 +21,7 @@ Nexstar nexstar{settings, 8, 9};
 GPS gps{12, 4, nexstar};
 
 Commands commands{gps, nexstar, bluetooth, settings};
+Processor processor{nexstar, gps, bluetooth, commands, settings};
 
 //AltSoftSerial nexstar; //{8, 9, false};
 //#define BT_TEST 1
@@ -35,27 +37,20 @@ void setup() {
 #endif
   digitalWrite(LED_BUILTIN, LOW);
   setSyncProvider(RTC.get);   // the function to get the time from the RTC
-
   settings.load();
   bluetooth.setup();
   setSyncProvider(RTC.get);   // the function to get the time from the RTC
   if(timeStatus()!= timeSet)
-    Serial.println("Error setting time from RTC");
+    Serial.println(F("Error setting time from RTC"));
   gps.open();
-  auto got_fix = gps.wait_for_fix(1*1000);
-  Serial.print("Got GPS fix: "); Serial.println(got_fix);
   gps.sleep();
-  //gps.close();
-  //Serial.println("Bluetooth setup completed");
+
   nexstar.setup();
   digitalWrite(LED_BUILTIN, HIGH);
-  //gps.open();
-  //gps.resume();
-  //gps.debug(false, Serial);
-
-  //pcPorts.write("#");
   Serial.setTimeout(2000);
-  nexstar.set_time();
+  commands.set_processor(&processor);
+  processor.gps_getfix();
+  processor.sync_nexstar();
 }
 
 void loop() {
@@ -64,7 +59,5 @@ void loop() {
   while(bt.available()) Serial.write(bt.read());
   return;
 #endif
-  commands.read();
-  nexstar.write(commands.buffer(), commands.buffer_len());
-  nexstar.read_to(Serial);
+  processor.loop();
 }

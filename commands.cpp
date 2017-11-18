@@ -3,6 +3,7 @@
 #include "nexstar.h"
 #include "bluetooth.h"
 #include "settings.h"
+#include "processor.h"
 #include <DS1307RTC.h>
 
 
@@ -67,9 +68,9 @@ void Commands::handle(const String &command) {
 
 void Commands::bluetooth_settings_changed() {
 #if HC_MODEL == 5
-  Serial.println("With bluetooth module HC-05 you need to manually reboot into AT mode (pushing the setup button).");
+  Serial.println(F("With bluetooth module HC-05 you need to manually reboot into AT mode (pushing the setup button)."));
 #else
-  Serial.println("Bluetooth settings will be applied at next reboot");
+  Serial.println(F("Bluetooth settings will be applied at next reboot"));
 #endif
 }
 
@@ -88,34 +89,28 @@ void Commands::bluetooth_pin(const Command &command) {
     Serial.println(settings.bluetooth_pin());
   } else {
     settings.bluetooth_pin(command.params[0].c_str());
-    Serial.print("+OK"); Serial.println(settings.bluetooth_pin());
+    Serial.print(F("+OK")); Serial.println(settings.bluetooth_pin());
     bluetooth_settings_changed();
   }
 }
 
 void Commands::change_tz(const Command &command) {
   if(command.params[0].length() == 0) {
-    Serial.print("timezone: "); Serial.print(static_cast<int>(settings.timezone()));
-    Serial.print(", dst: "); Serial.println(static_cast<int>(settings.daylight_saving()));
+    Serial.print(F("timezone: ")); Serial.print(static_cast<int>(settings.timezone()));
+    Serial.print(F(", dst: ")); Serial.println(static_cast<int>(settings.daylight_saving()));
   } else {
     settings.timezone(atoi(command.params[0].c_str()));
     settings.daylight_saving(atoi(command.params[1].c_str()));
-    Serial.print("+OK"); Serial.print(settings.timezone()); Serial.print(","); Serial.println(settings.daylight_saving());
+    Serial.print(F("+OK")); Serial.print(settings.timezone()); Serial.print(","); Serial.println(settings.daylight_saving());
   }
 }
 
 
 
 void Commands::gps_fix(const Command &command) {
-    gps.resume();
-    int secs = atoi(command.params[0].c_str());
-    if(secs == 0)
-      secs = 120;
-    Serial.print("Looking for gps fix, timeout="); Serial.print(secs); Serial.println(" secs");
-    auto got_fix = gps.wait_for_fix(secs*1000);
-    Serial.print("got fix: "); Serial.println(got_fix);
-    gps.sleep();
+  processor->gps_getfix(atoi(command.params[0].c_str()));
 }
+
 void Commands::time(const Command &command) {
   tmElements_t datetime;
   if(RTC.chipPresent()) {
@@ -123,7 +118,7 @@ void Commands::time(const Command &command) {
     Serial.print(day()); Serial.print("/"); Serial.print(month()); Serial.print("/"); Serial.println(year());
     
   } else {
-    Serial.println("ERROR: no RTC chip detected");
+    Serial.println(F("ERROR: no RTC chip detected"));
   }
 }
 
