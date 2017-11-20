@@ -63,7 +63,7 @@ void Commands::handle(const String &command) {
   )
     return;
   Serial.print(F("Unrecognized command: ")); Serial.print(parsed.name); Serial.println("#");
-  Serial.println(F("Available commands: PING, GPSFIX=<secs>, GPSDEBUG[=raw], BTNAME[=name], BTPIN[=pin],TZINFO[=tz,dst]"));
+  Serial.println(F("Available commands: PING, GPSFIX, GPSDEBUG[=raw], BTNAME[=name], BTPIN[=pin],TZINFO[=tz,dst]"));
 }
 
 void Commands::bluetooth_settings_changed() {
@@ -108,7 +108,7 @@ void Commands::change_tz(const Command &command) {
 
 
 void Commands::gps_fix(const Command &command) {
-  processor->gps_getfix(atoi(command.params[0].c_str()));
+  processor->gps_getfix();
 }
 
 void Commands::time(const Command &command) {

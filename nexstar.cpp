@@ -3,11 +3,7 @@
 #include "TimeLib.h"
 Nexstar::Nexstar(Settings &settings, int rx, int tx) : settings{settings}, _port{rx, tx} {}
 
-void Nexstar::write(uint8_t *buffer, int size) {
-  _port.listen();
-  for(int i=0; i<size; i++)
-    _port.write(buffer[i]);
-}
+
 
 void Nexstar::read_to(Stream &stream) {
   if(_port.available()) {
