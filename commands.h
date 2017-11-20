@@ -24,7 +24,7 @@ private:
   Settings &settings;
   Processor *processor;
   uint8_t _buffer[3];
-  size_t _buffer_len;
+  uint8_t _buffer_len;
   void handle(const String &command);
   // Command handlers
   void gps_fix(const Command &command);

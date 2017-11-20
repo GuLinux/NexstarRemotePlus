@@ -8,14 +8,16 @@ void displayGPSInfo(TinyGPSPlus &gps, Stream &stream);
 
 void GPS::sleep() {
   static const char sleepMessage[] = {0xB5, 0x62, 0x02, 0x41, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x4D, 0x3B};
-  for (int i = 0; i < sizeof(sleepMessage); i++)
+  for (uint8_t i = 0; i < sizeof(sleepMessage); i++)
     port.write(sleepMessage[i]);
+  delay(1000);
 }
 
 void GPS::resume() {
+  delay(500);
   for (int i = 0; i < 10; i++)
     port.write("\xFF");
-  delay(100);
+  delay(500);
 }
 
 void GPS::open() {
@@ -30,22 +32,24 @@ void GPS::close() {
   port.end();
 }
 
-bool GPS::wait_for_fix(uint64_t timeout_msec) {
+bool GPS::wait_for_fix(uint16_t timeout_sec) {
   auto start = millis();
   port.listen();
-  auto expired = [start, timeout_msec] { return static_cast<unsigned long>(millis() - start) >= timeout_msec; };
+  auto expired = [&start, &timeout_sec] { return static_cast<unsigned long>(millis() - start) >= static_cast<unsigned long>(timeout_sec) * 1000l; };
 
-  while ( (! gps.location.isValid() || ! gps.date.isValid()) && ! expired()) {
-    while (port.available() && not expired()) {
-      if (gps.encode(port.read()));
+  while ( ! expired() && ! has_fix() ) {
+    while (port.available() && ! expired()) {
+      gps.encode(port.read());
+      //if ();
         //displayGPSInfo(gps, Serial);
     }
   }
-  displayGPSInfo(gps, Serial);
+  //displayGPSInfo(gps, Serial);
   syncDateTime();
-  if(gps.date.isValid() && gps.time.isValid())
+  if(has_time()) {
     nexstar.set_time();
-  return gps.location.isValid() && gps.date.isValid() && gps.time.isValid();
+  }
+  return has_fix();
 }
 
 

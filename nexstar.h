@@ -8,7 +8,6 @@ class Nexstar {
 public:
   Nexstar(Settings &settings, int rx, int tx);
   inline SoftwareSerial &port() { return _port; }
-  void write(uint8_t *buffer, int size);
   void read_to(Stream &stream);
   void setup();
   void set_time();

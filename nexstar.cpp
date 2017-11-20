@@ -28,16 +28,14 @@ void Nexstar::set_time() {
   int32_t offset = static_cast<int32_t>(settings.timezone() + settings.daylight_saving()) * 60 * 60;
   breakTime(now() + offset, time);
   
-  uint8_t command[9];
-  command[0] = 'H';
-  command[1] = time.Hour;
-  command[2] = time.Minute;
-  command[3] = time.Second;
-  command[4] = time.Month;
-  command[5] = time.Day;
-  command[6] = 1970 + time.Year - 2000;
-  command[7] = settings.timezone() > 0 ? settings.timezone() : (256 + settings.timezone());
-  command[8] = settings.daylight_saving();
-  write(command, 9);
+  _port.write('H');
+  _port.write(time.Hour);
+  _port.write(time.Minute);
+  _port.write(time.Second);
+  _port.write(time.Month);
+  _port.write(time.Day);
+  _port.write(1970 + time.Year - 2000);
+  _port.write(settings.timezone() > 0 ? settings.timezone() : (256 + settings.timezone()));
+  _port.write(settings.daylight_saving());
 }
 

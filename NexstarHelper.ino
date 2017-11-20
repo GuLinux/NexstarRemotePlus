@@ -6,7 +6,10 @@
 #include "commands.h"
 #include "settings.h"
 #include "processor.h"
+#include "display.h"
 #include <DS1307RTC.h>
+
+#define BUTTON_PIN 2
 
 // Wiring: green -> TX, blue -> RX
 // AltSoftSerial wiring: 9=TX, 8=RX
@@ -15,13 +18,14 @@
 // D4 = BT TXT = SWSerial RXD
 Settings settings;
 
-Bluetooth bluetooth{settings, 10, 3}; // RX, TX
+Bluetooth bluetooth{settings}; // RX, TX
 Nexstar nexstar{settings, 8, 9};
 
 GPS gps{12, 4, nexstar};
 
 Commands commands{gps, nexstar, bluetooth, settings};
-Processor processor{nexstar, gps, bluetooth, commands, settings};
+Display display;
+Processor processor{nexstar, gps, bluetooth, display, commands, settings};
 
 //AltSoftSerial nexstar; //{8, 9, false};
 //#define BT_TEST 1
@@ -44,13 +48,14 @@ void setup() {
     Serial.println(F("Error setting time from RTC"));
   gps.open();
   gps.sleep();
-
   nexstar.setup();
   digitalWrite(LED_BUILTIN, HIGH);
   Serial.setTimeout(2000);
   commands.set_processor(&processor);
   processor.gps_getfix();
   processor.sync_nexstar();
+  pinMode(BUTTON_PIN, INPUT);
+  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), buttonChanged, CHANGE);
 }
 
 void loop() {
@@ -61,3 +66,14 @@ void loop() {
 #endif
   processor.loop();
 }
+
+volatile unsigned long btn_high;
+void buttonChanged() {
+  int state = digitalRead(BUTTON_PIN);
+  if(state == 1) {
+    btn_high = millis();
+  } else {
+    processor.button_pressed(millis() - btn_high > 2000l);
+  }
+}
+

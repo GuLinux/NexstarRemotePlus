@@ -10,11 +10,14 @@ class GPS {
 public:
   GPS(int rx, int tx, Nexstar &nexstar);
   void open();
-  bool wait_for_fix(uint64_t timeout_msec = 2 * 60 * 1000);
+  bool wait_for_fix(uint16_t timeout_sec);
   void sleep();
   void resume();
   void close();
   void debug(Stream &stream, bool raw=false);
+  inline bool has_time() const { return gps.date.isValid() && gps.time.isValid(); }
+  inline bool has_location() const { return gps.location.isValid(); }
+  inline bool has_fix() const { return has_location() && has_time(); }
 private:
   SoftwareSerial port;
   Nexstar &nexstar;

@@ -8,12 +8,10 @@
 class Settings;
 class Bluetooth {
 public:
-  Bluetooth(Settings &settings, int rx, int tx);
+  Bluetooth(Settings &settings);
   void setup();
   String atCommand(const String &msg);
-  inline HardwareSerial &port() {return _port; }
 private:
   Settings &settings;
-  HardwareSerial &_port;
 };
 
