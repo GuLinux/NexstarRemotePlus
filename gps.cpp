@@ -1,5 +1,5 @@
 #include "gps.h"
-#include <DS1307RTC.h>
+//#include <DS1307RTC.h>
 #include "nexstar.h"
 
 GPS::GPS(HardwareSerial &port, Nexstar &nexstar) : _port(port), nexstar(nexstar)
@@ -89,6 +89,7 @@ void GPS::debug(Stream &stream, bool raw) {
 }
 
 void GPS::syncDateTime() {
+  /*
   if(! gps.date.isValid() || ! gps.time.isValid() || gps.date.year() < 2017) { // hardcoded number, ok, but let's assume for a second we're not time traveling...
     return;
   }
@@ -105,6 +106,7 @@ void GPS::syncDateTime() {
   //Serial.print("UNIX time: "); Serial.println(t);
   RTC.set(t);
   setTime(t);
+  */
 }
 
 void displayGPSInfo(TinyGPSPlus &gps, Stream &stream)

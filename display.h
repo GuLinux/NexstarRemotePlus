@@ -8,6 +8,7 @@
 class Display {
 public:
   Display();
+  void begin();
 private:
   Adafruit_SSD1306 oled;
 };

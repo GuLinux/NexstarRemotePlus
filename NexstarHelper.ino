@@ -6,7 +6,7 @@
 #include "processor.h"
 #include "display.h"
 #include "pc_stream.h"
-#include <DS1307RTC.h>
+//#include <DS1307RTC.h>
 
 #define BUTTON_PIN 3
 
@@ -31,13 +31,14 @@ Processor processor{nexstar, gps, bluetooth, display, commands, settings, pc_str
 void setup() {
   Serial.begin(9600);
   delay(4000);
+  display.begin();
   Serial.println("Starting up NexStarRemote+");
   digitalWrite(LED_BUILTIN, LOW);
-  setSyncProvider(RTC.get);   // the function to get the time from the RTC
+ // setSyncProvider(RTC.get);   // the function to get the time from the RTC
   settings.load();
   bluetooth.setup();
-  if(timeStatus()!= timeSet)
-    Serial.println(F("Error setting time from RTC"));
+ // if(timeStatus()!= timeSet)
+ //   Serial.println(F("Error setting time from RTC"));
   gps.open();
   gps.sleep();
   nexstar.setup();
@@ -57,6 +58,7 @@ void loop() {
 volatile unsigned long btn_high;
 void buttonChanged() {
   int state = digitalRead(BUTTON_PIN);
+  Serial.println(state);
   if(state == 1) {
     btn_high = millis();
   } else {

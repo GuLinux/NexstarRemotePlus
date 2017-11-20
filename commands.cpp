@@ -5,7 +5,8 @@
 #include "settings.h"
 #include "processor.h"
 #include "pc_stream.h"
-#include <DS1307RTC.h>
+//#include <DS1307RTC.h>
+#include <TimeLib.h>
 
 
 struct Command {
@@ -117,13 +118,8 @@ void Commands::gps_fix(const Command &command) {
 
 void Commands::time(const Command &command) {
   tmElements_t datetime;
-  if(RTC.chipPresent()) {
-    pc_stream.current().print(hour()); pc_stream.current().print(":"); pc_stream.current().print(minute()); pc_stream.current().print(":"); pc_stream.current().print(second()); pc_stream.current().print(" ");
-    pc_stream.current().print(day()); pc_stream.current().print("/"); pc_stream.current().print(month()); pc_stream.current().print("/"); pc_stream.current().println(year());
-    
-  } else {
-    pc_stream.current().println(F("ERROR: no RTC chip detected"));
-  }
+  pc_stream.current().print(hour()); pc_stream.current().print(":"); pc_stream.current().print(minute()); pc_stream.current().print(":"); pc_stream.current().print(second()); pc_stream.current().print(" ");
+  pc_stream.current().print(day()); pc_stream.current().print("/"); pc_stream.current().print(month()); pc_stream.current().print("/"); pc_stream.current().println(year());
 }
 
 void Commands::gps_debug(const Command &command) {
