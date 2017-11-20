@@ -4,10 +4,25 @@
 static const char *default_version = "v1.0.1";
 
 Settings::Settings() {
+  //EEPROM.init();
+}
+
+template<typename T> uint16_t struct_size() {
+  return (sizeof(T) + (sizeof(T)%2))/2;
+}
+
+template<typename T> uint16_t *get_buffer(T &t) {
+  return reinterpret_cast<uint16_t*>(&t);
 }
 
 void Settings::load() {
-  EEPROM.get(0, data);
+  if(false) {
+  auto data_eeprom = get_buffer(data);
+  for(uint16_t i=0; i<struct_size<Data>(); i++) {
+    data_eeprom[i] = EEPROM.read(i);
+  }
+}
+  //EEPROM.get(0, data);
   if(String(data.version) != default_version) {
     Serial.println(F("Settings empty, loading defaults"));
     strcpy(data.version, default_version);
@@ -20,7 +35,10 @@ void Settings::load() {
 }
 
 void Settings::save() {
-  EEPROM.put(0, data);
+  auto data_eeprom = get_buffer(data);
+  for(uint16_t i=0; i<struct_size<Data>(); i++) {
+    EEPROM.update(i, data_eeprom[i]);
+  }
   load();
 }
 

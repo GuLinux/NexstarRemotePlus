@@ -4,6 +4,10 @@
 #include "bluetooth.h"
 #include "commands.h"
 #include "settings.h"
+#include "pc_stream.h"
+
+Processor::Processor(Nexstar &nexstar, GPS &gps, Bluetooth &bluetooth, Display &display, Commands &commands, Settings &settings, PCStream &pc_stream)
+                : nexstar(nexstar), gps(gps), bluetooth(bluetooth), display(display), commands(commands), settings(settings), pc_stream(pc_stream) {}
 
 void Processor::loop() {
   if(_gps_fix_requested) {
@@ -20,6 +24,6 @@ void Processor::loop() {
   }
   commands.read();
   nexstar.port().write(commands.buffer(), commands.buffer_len());
-  nexstar.read_to(Serial);
+  nexstar.read_to(pc_stream.current());
 }
 

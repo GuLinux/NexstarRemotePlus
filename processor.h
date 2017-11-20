@@ -8,10 +8,10 @@ class Settings;
 class Bluetooth;
 class Commands;
 class Display;
+class PCStream;
 class Processor {
 public:
-  inline Processor(Nexstar &nexstar, GPS &gps, Bluetooth &bluetooth, Display &display, Commands &commands, Settings &settings)
-                : nexstar{nexstar}, gps{gps}, bluetooth{bluetooth}, display{display}, commands{commands}, settings{settings} {}
+  Processor(Nexstar &nexstar, GPS &gps, Bluetooth &bluetooth, Display &display, Commands &commands, Settings &settings, PCStream &pc_stream);
   void loop();
   inline void gps_getfix() { _gps_fix_requested = true; }
   inline void sync_nexstar() { _sync_nexstar = true; }
@@ -23,6 +23,7 @@ private:
   Display &display;
   Commands &commands;
   Settings &settings;
+  PCStream &pc_stream;
 
   bool _gps_fix_requested = false;
   bool _sync_nexstar = false;

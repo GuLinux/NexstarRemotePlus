@@ -1,5 +1,4 @@
 #include "Arduino.h"
-#include "SoftwareSerial.h"
 #include <TinyGPS++.h>
 
 #pragma once
@@ -8,7 +7,7 @@ class Nexstar;
 
 class GPS {
 public:
-  GPS(int rx, int tx, Nexstar &nexstar);
+  GPS(HardwareSerial &port, Nexstar &nexstar);
   void open();
   bool wait_for_fix(uint16_t timeout_sec);
   void sleep();
@@ -19,7 +18,7 @@ public:
   inline bool has_location() const { return gps.location.isValid(); }
   inline bool has_fix() const { return has_location() && has_time(); }
 private:
-  SoftwareSerial port;
+  HardwareSerial &_port;
   Nexstar &nexstar;
   TinyGPSPlus gps;
   void send_nmea(const String &command);

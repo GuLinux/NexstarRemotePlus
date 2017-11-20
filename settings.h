@@ -7,9 +7,9 @@ class Settings {
 public:
   Settings();
   void load();
-  inline char *version() const { return data.version; }
-  inline char *bluetooth_pin() const { return data.bluetooth_pin; }
-  inline char *bluetooth_name() const { return data.bluetooth_name; }
+  inline const char *version() const { return data.version; }
+  inline const char *bluetooth_pin() const { return data.bluetooth_pin; }
+  inline const char *bluetooth_name() const { return data.bluetooth_name; }
   inline int8_t timezone() const { return data.timezone; }
   inline int8_t daylight_saving() const { return data.daylight_saving; }
   inline int16_t gps_timeout() const { return data.gps_timeout; }

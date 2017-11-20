@@ -1,7 +1,9 @@
 #include "nexstar.h"
 #include "settings.h"
 #include "TimeLib.h"
-Nexstar::Nexstar(Settings &settings, int rx, int tx) : settings{settings}, _port{rx, tx} {}
+Nexstar::Nexstar(HardwareSerial &port, Settings &settings) : _port(port), settings(settings)
+{
+}
 
 
 

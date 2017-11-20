@@ -1,5 +1,4 @@
 #include "Arduino.h"
-#include <SoftwareSerial.h>
 
 #pragma once
 
@@ -8,10 +7,12 @@
 class Settings;
 class Bluetooth {
 public:
-  Bluetooth(Settings &settings);
+  Bluetooth(HardwareSerial &port, Settings &settings);
   void setup();
   String atCommand(const String &msg);
+  inline HardwareSerial &port() { return _port; }
 private:
   Settings &settings;
+  HardwareSerial &_port;
 };
 
