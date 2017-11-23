@@ -1,3 +1,5 @@
+#include "rtc.h"
+
 #include "bluetooth.h"
 #include "gps.h"
 #include "nexstar.h"
@@ -6,35 +8,41 @@
 #include "processor.h"
 #include "display.h"
 #include "pc_stream.h"
-//#include <DS1307RTC.h>
+#include "osd.h"
 
-#define BUTTON_PIN 3
+#include <TimeLib.h>
+//#define BUTTON_PIN 3
+#define BUTTON_PIN 32
 
 // Wiring: green -> TX, blue -> RX
 // AltSoftSerial wiring: 9=TX, 8=RX
 
 // D3 = BT RXD = SWSerial TXD
 // D4 = BT TXT = SWSerial RXD
-Display display;
 
+RTC rtc;
+Display display;
 Settings settings;
 PCStream pc_stream{Serial};
-Bluetooth bluetooth{Serial3, settings}; // RX, TX
-Nexstar nexstar{Serial1, settings};
+Bluetooth bluetooth{Serial3}; // RX, TX
+Nexstar nexstar{Serial1};
 
-GPS gps{Serial2, nexstar};
+GPS gps{Serial2};
+HardwareTimer display_timer(1);
 
-Commands commands{gps, nexstar, bluetooth, settings, pc_stream};
-Processor processor{nexstar, gps, bluetooth, display, commands, settings, pc_stream};
+
+Commands commands;
+Processor processor;
+OSD osd;
 
 
 void setup() {
   Serial.begin(9600);
-  delay(4000);
+  rtc.setup();
   display.begin();
   Serial.println("Starting up NexStarRemote+");
+  
   digitalWrite(LED_BUILTIN, LOW);
- // setSyncProvider(RTC.get);   // the function to get the time from the RTC
   settings.load();
   bluetooth.setup();
  // if(timeStatus()!= timeSet)
@@ -44,25 +52,47 @@ void setup() {
   nexstar.setup();
   digitalWrite(LED_BUILTIN, HIGH);
   Serial.setTimeout(2000);
-  commands.set_processor(&processor);
-  processor.gps_getfix();
-  processor.sync_nexstar();
-  pinMode(BUTTON_PIN, INPUT_PULLUP);
-  attachInterrupt(BUTTON_PIN, buttonChanged, CHANGE);
+  //processor.gps_getfix();
+  //processor.sync_nexstar();
+  pinMode(BUTTON_PIN, INPUT);
+  attachInterrupt(BUTTON_PIN, buttonChanged, FALLING);
+
+  // Pause the timer while we're configuring it
+  display_timer.pause();
+  // Set up period
+  display_timer.setPeriod(200000); // in microseconds
+
+  // Set up an interrupt on channel 1
+  display_timer.setChannel1Mode(TIMER_OUTPUT_COMPARE);
+  display_timer.setCompare(TIMER_CH1, 1);  // Interrupt 1 count after each update
+  display_timer.attachCompare1Interrupt(on_timer);
+
+  // Refresh the timer's count, prescale, and overflow
+  display_timer.refresh();
+
+  // Start the timer counting
+  display_timer.resume();
 }
 
 void loop() {
   processor.loop();
 }
 
-volatile unsigned long btn_high;
 void buttonChanged() {
-  int state = digitalRead(BUTTON_PIN);
-  Serial.println(state);
-  if(state == 1) {
-    btn_high = millis();
-  } else {
-    processor.button_pressed(millis() - btn_high > 2000l);
+  osd.button_pressed();
+}
+volatile bool usb_connected = false;
+
+void on_timer() {
+  osd.tick();
+  bool _usb_connected = Serial.isConnected();
+  if(_usb_connected && ! usb_connected) {
+    pc_stream.set_current(Serial);
   }
+  else if(! _usb_connected && usb_connected) {
+    pc_stream.set_current(bluetooth.port());
+  }
+  usb_connected = _usb_connected;
+  display.update();
 }
 

@@ -3,7 +3,7 @@
 
 static const char *default_version = "v1.0.1";
 
-Settings::Settings() {
+Settings::Settings(): Singleton<Settings>(this) {
   EEPROM.init();
 }
 

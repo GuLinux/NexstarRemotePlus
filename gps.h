@@ -1,13 +1,14 @@
 #include "Arduino.h"
 #include <TinyGPS++.h>
+#include "singleton.h"
 
 #pragma once
 
 class Nexstar;
-
-class GPS {
+class RTC;
+class GPS : public Singleton<GPS> {
 public:
-  GPS(HardwareSerial &port, Nexstar &nexstar);
+  GPS(HardwareSerial &port);
   void open();
   bool wait_for_fix(uint16_t timeout_sec);
   void sleep();
@@ -19,7 +20,6 @@ public:
   inline bool has_fix() const { return has_location() && has_time(); }
 private:
   HardwareSerial &_port;
-  Nexstar &nexstar;
   TinyGPSPlus gps;
   void send_nmea(const String &command);
   void syncDateTime();

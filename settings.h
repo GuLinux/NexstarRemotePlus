@@ -1,9 +1,10 @@
 #include "Arduino.h"
+#include "singleton.h"
 
 #pragma once
 #define BT_NAME_SIZE 50
 
-class Settings {
+class Settings: public Singleton<Settings> {
 public:
   Settings();
   void load();

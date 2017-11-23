@@ -1,7 +1,7 @@
 #include "nexstar.h"
 #include "settings.h"
 #include "TimeLib.h"
-Nexstar::Nexstar(HardwareSerial &port, Settings &settings) : _port(port), settings(settings)
+Nexstar::Nexstar(HardwareSerial &port) : Singleton<Nexstar>(this), _port(port)
 {
 }
 
@@ -18,12 +18,11 @@ void Nexstar::setup() {
 }
 
 void Nexstar::set_gps_info(double latitude, double longitude) {
-  
 }
 
 void Nexstar::set_time() {
   tmElements_t time;
-  int32_t offset = static_cast<int32_t>(settings.timezone() + settings.daylight_saving()) * 60 * 60;
+  int32_t offset = static_cast<int32_t>(Settings::instance()->timezone() + Settings::instance()->daylight_saving()) * 60 * 60;
   breakTime(now() + offset, time);
   
   _port.write('H');
@@ -33,7 +32,7 @@ void Nexstar::set_time() {
   _port.write(time.Month);
   _port.write(time.Day);
   _port.write(1970 + time.Year - 2000);
-  _port.write(settings.timezone() > 0 ? settings.timezone() : (256 + settings.timezone()));
-  _port.write(settings.daylight_saving());
+  _port.write(Settings::instance()->timezone() > 0 ? Settings::instance()->timezone() : (256 + Settings::instance()->timezone()));
+  _port.write(Settings::instance()->daylight_saving());
 }
 

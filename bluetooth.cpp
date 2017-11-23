@@ -2,7 +2,7 @@
 #include "settings.h";
 
 
-Bluetooth::Bluetooth(HardwareSerial &port, Settings &settings) : _port(port), settings(settings) {}
+Bluetooth::Bluetooth(HardwareSerial &port) : Singleton<Bluetooth>(this), _port(port) {}
 
 void Bluetooth::setup() {
   _port.setTimeout(2000);
@@ -14,8 +14,8 @@ void Bluetooth::setup() {
       delay(200);
     }
   if(atCommand("AT").startsWith("OK")) {
-    atCommand(String("AT+NAME=") + settings.bluetooth_name());
-    atCommand(String("AT+PIN=") + settings.bluetooth_pin());
+    atCommand(String("AT+NAME=") + Settings::instance()->bluetooth_name());
+    atCommand(String("AT+PIN=") + Settings::instance()->bluetooth_pin());
     atCommand("AT+RESET");
   }
   _port.end();
@@ -24,8 +24,8 @@ void Bluetooth::setup() {
 #else
   _port.begin(9600);
   atCommand("AT");
-  atCommand(String("AT+NAME") + settings.bluetooth_name());
-  atCommand(String("AT+PIN") + settings.bluetooth_pin());
+  atCommand(String("AT+NAME") + Settings::instance()->bluetooth_name());
+  atCommand(String("AT+PIN") + Settings::instance()->bluetooth_pin());
 #endif
   //delay(500);
   //_port.println("Bluetooth initialized");

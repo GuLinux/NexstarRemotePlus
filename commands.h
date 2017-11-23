@@ -1,8 +1,7 @@
 #include "Arduino.h"
-
+#include "singleton.h"
 #pragma once
 
-class GPS;
 class Nexstar;
 class Bluetooth;
 class Settings;
@@ -10,21 +9,14 @@ struct Command;
 class PCStream;
 class Processor;
 typedef 
-class Commands {
+class Commands : public Singleton<Commands> {
 public:
-  Commands(GPS &gps, Nexstar &nexstar, Bluetooth &bluetooth, Settings &settings, PCStream &pc_stream);
+  Commands();
   inline const uint8_t *buffer() const { return _buffer; };
   inline size_t buffer_len() const { return _buffer_len; }
   void read();
-  inline void set_processor(Processor *processor) { this->processor = processor; }
 
 private:
-  GPS &gps;
-  Nexstar &nexstar;
-  Bluetooth &bluetooth;
-  Settings &settings;
-  PCStream &pc_stream;
-  Processor *processor;
   uint8_t _buffer[3];
   uint8_t _buffer_len;
   void handle(const String &command);

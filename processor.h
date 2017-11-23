@@ -1,29 +1,23 @@
 #include "Arduino.h"
-
+#include "singleton.h"
 #pragma once
 
-class GPS;
 class Nexstar;
 class Settings;
 class Bluetooth;
 class Commands;
 class Display;
 class PCStream;
-class Processor {
+class Processor : public Singleton<Processor> {
 public:
-  Processor(Nexstar &nexstar, GPS &gps, Bluetooth &bluetooth, Display &display, Commands &commands, Settings &settings, PCStream &pc_stream);
+  Processor();
   void loop();
-  inline void gps_getfix() { _gps_fix_requested = true; }
-  inline void sync_nexstar() { _sync_nexstar = true; }
-  inline void button_pressed(bool longpress) {}
+  inline void request_gps_fix() { _gps_fix_requested = true; }
+  inline void request_nexstar_sync() { _sync_nexstar = true; }
+  inline void record_button_press(bool longpress) {}
 private:
-  Nexstar &nexstar;
-  GPS &gps;
-  Bluetooth &bluetooth;
-  Display &display;
-  Commands &commands;
-  Settings &settings;
-  PCStream &pc_stream;
+  void gps_fix();
+  void nexstar_sync();
 
   bool _gps_fix_requested = false;
   bool _sync_nexstar = false;

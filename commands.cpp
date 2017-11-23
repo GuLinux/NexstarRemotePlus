@@ -5,7 +5,6 @@
 #include "settings.h"
 #include "processor.h"
 #include "pc_stream.h"
-//#include <DS1307RTC.h>
 #include <TimeLib.h>
 
 
@@ -23,16 +22,14 @@ struct Command {
   }
 };
 
-Commands::Commands(GPS &gps, Nexstar &nexstar, Bluetooth &bluetooth, Settings &settings, PCStream &pc_stream)
-        : gps(gps), nexstar(nexstar), bluetooth(bluetooth), settings(settings), pc_stream(pc_stream)
-{
+Commands::Commands() : Singleton<Commands>(this) {
 }
 
 void Commands::read() {
   _buffer_len = 0;
   while(_buffer_len < 3) {
-    if(pc_stream.current().available())
-      _buffer[_buffer_len++] = pc_stream.current().read();
+    if(PCStream::instance()->current().available())
+      _buffer[_buffer_len++] = PCStream::instance()->current().read();
     if(_buffer[0] != 'A')
       return;
     if(_buffer_len > 1 && _buffer[1] != 'T')
@@ -42,7 +39,7 @@ void Commands::read() {
     if(_buffer_len > 2) {
       _buffer_len = 0;
 
-      handle(pc_stream.current().readStringUntil('#'));
+      handle(PCStream::instance()->current().readStringUntil('#'));
       return;
     }
   }
@@ -51,14 +48,14 @@ void Commands::read() {
 void Commands::handle(const String &command) {
   Command parsed{command};
   /*
-  pc_stream.current().print("command name: "); pc_stream.current().println(parsed.name);
-  pc_stream.current().print("arg0: '"); pc_stream.current().print(parsed.params[0]); pc_stream.current().println("'");
-  pc_stream.current().print("arg1: '"); pc_stream.current().print(parsed.params[1]); pc_stream.current().println("'");
-  pc_stream.current().print("arg2: '"); pc_stream.current().print(parsed.params[2]); pc_stream.current().println("'");
-  pc_stream.current().print("arg3: '"); pc_stream.current().print(parsed.params[3]); pc_stream.current().println("'");
+  PCStream::instance()->current().print("command name: "); PCStream::instance()->current().println(parsed.name);
+  PCStream::instance()->current().print("arg0: '"); PCStream::instance()->current().print(parsed.params[0]); PCStream::instance()->current().println("'");
+  PCStream::instance()->current().print("arg1: '"); PCStream::instance()->current().print(parsed.params[1]); PCStream::instance()->current().println("'");
+  PCStream::instance()->current().print("arg2: '"); PCStream::instance()->current().print(parsed.params[2]); PCStream::instance()->current().println("'");
+  PCStream::instance()->current().print("arg3: '"); PCStream::instance()->current().print(parsed.params[3]); PCStream::instance()->current().println("'");
   */
   if(
-      parsed.handle("PING", [this](const Command &) { pc_stream.current().println("PONG"); }) ||
+      parsed.handle("PING", [this](const Command &) { PCStream::instance()->current().println("PONG"); }) ||
       parsed.handle("GPSFIX", [this](const Command &c) { gps_fix(c); }) ||
       parsed.handle("GPSDEBUG", [this](const Command &c) { gps_debug(c); }) ||
       parsed.handle("BTNAME", [this](const Command &c) { bluetooth_name(c); }) ||
@@ -67,65 +64,65 @@ void Commands::handle(const String &command) {
       parsed.handle("TIME", [this](const Command &c) { time(c); })
   )
     return;
-  pc_stream.current().print(F("Unrecognized command: ")); pc_stream.current().print(parsed.name); pc_stream.current().println("#");
-  pc_stream.current().println(F("Available commands: PING, GPSFIX, GPSDEBUG[=raw], BTNAME[=name], BTPIN[=pin],TZINFO[=tz,dst]"));
+  PCStream::instance()->current().print(F("Unrecognized command: ")); PCStream::instance()->current().print(parsed.name); PCStream::instance()->current().println("#");
+  PCStream::instance()->current().println(F("Available commands: PING, GPSFIX, GPSDEBUG[=raw], BTNAME[=name], BTPIN[=pin],TZINFO[=tz,dst]"));
 }
 
 void Commands::bluetooth_settings_changed() {
 #if HC_MODEL == 5
-  pc_stream.current().println(F("With bluetooth module HC-05 you need to manually reboot into AT mode (pushing the setup button)."));
+  PCStream::instance()->current().println(F("With bluetooth module HC-05 you need to manually reboot into AT mode (pushing the setup button)."));
 #else
-  pc_stream.current().println(F("Bluetooth settings will be applied at next reboot"));
+  PCStream::instance()->current().println(F("Bluetooth settings will be applied at next reboot"));
 #endif
 }
 
 void Commands::bluetooth_name(const Command &command) {
   if(command.params[0].length() == 0) {
-    pc_stream.current().println(settings.bluetooth_name());
+    PCStream::instance()->current().println(Settings::instance()->bluetooth_name());
   } else {
-    settings.bluetooth_name(command.params[0].c_str());
-    pc_stream.current().print("+OK"); pc_stream.current().println(settings.bluetooth_name());    
+    Settings::instance()->bluetooth_name(command.params[0].c_str());
+    PCStream::instance()->current().print("+OK"); PCStream::instance()->current().println(Settings::instance()->bluetooth_name());    
     bluetooth_settings_changed();
   }
 }
 
 void Commands::bluetooth_pin(const Command &command) {
   if(command.params[0].length() == 0) {
-    pc_stream.current().println(settings.bluetooth_pin());
+    PCStream::instance()->current().println(Settings::instance()->bluetooth_pin());
   } else {
-    settings.bluetooth_pin(command.params[0].c_str());
-    pc_stream.current().print(F("+OK")); pc_stream.current().println(settings.bluetooth_pin());
+    Settings::instance()->bluetooth_pin(command.params[0].c_str());
+    PCStream::instance()->current().print(F("+OK")); PCStream::instance()->current().println(Settings::instance()->bluetooth_pin());
     bluetooth_settings_changed();
   }
 }
 
 void Commands::change_tz(const Command &command) {
   if(command.params[0].length() == 0) {
-    pc_stream.current().print(F("timezone: ")); pc_stream.current().print(static_cast<int>(settings.timezone()));
-    pc_stream.current().print(F(", dst: ")); pc_stream.current().println(static_cast<int>(settings.daylight_saving()));
+    PCStream::instance()->current().print(F("timezone: ")); PCStream::instance()->current().print(static_cast<int>(Settings::instance()->timezone()));
+    PCStream::instance()->current().print(F(", dst: ")); PCStream::instance()->current().println(static_cast<int>(Settings::instance()->daylight_saving()));
   } else {
-    settings.timezone(atoi(command.params[0].c_str()));
-    settings.daylight_saving(atoi(command.params[1].c_str()));
-    pc_stream.current().print(F("+OK")); pc_stream.current().print(settings.timezone()); pc_stream.current().print(","); pc_stream.current().println(settings.daylight_saving());
+    Settings::instance()->timezone(atoi(command.params[0].c_str()));
+    Settings::instance()->daylight_saving(atoi(command.params[1].c_str()));
+    PCStream::instance()->current().print(F("+OK")); PCStream::instance()->current().print(Settings::instance()->timezone()); PCStream::instance()->current().print(","); PCStream::instance()->current().println(Settings::instance()->daylight_saving());
   }
 }
 
 
 
 void Commands::gps_fix(const Command &command) {
-  processor->gps_getfix();
+  Processor::instance()->request_gps_fix();
 }
 
 void Commands::time(const Command &command) {
   tmElements_t datetime;
-  pc_stream.current().print(hour()); pc_stream.current().print(":"); pc_stream.current().print(minute()); pc_stream.current().print(":"); pc_stream.current().print(second()); pc_stream.current().print(" ");
-  pc_stream.current().print(day()); pc_stream.current().print("/"); pc_stream.current().print(month()); pc_stream.current().print("/"); pc_stream.current().println(year());
+  PCStream::instance()->current().print(hour()); PCStream::instance()->current().print(":"); PCStream::instance()->current().print(minute()); PCStream::instance()->current().print(":"); PCStream::instance()->current().print(second()); PCStream::instance()->current().print(" ");
+  PCStream::instance()->current().print(day()); PCStream::instance()->current().print("/"); PCStream::instance()->current().print(month()); PCStream::instance()->current().print("/"); PCStream::instance()->current().println(year());
 }
 
 void Commands::gps_debug(const Command &command) {
-    gps.resume();
-    gps.debug(pc_stream.current(), command.params[0] == "raw");
-    gps.sleep();
+    GPS::instance()->resume();
+    GPS::instance()->debug(PCStream::instance()->current(), command.params[0] == "raw");
+    GPS::instance()->sleep();
 }
 
 Command::Command(const String &message) {

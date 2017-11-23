@@ -1,8 +1,10 @@
 #include "gps.h"
 //#include <DS1307RTC.h>
-#include "nexstar.h"
+#include "processor.h"
+#include "TimeLib.h"
+#include "rtc.h"
 
-GPS::GPS(HardwareSerial &port, Nexstar &nexstar) : _port(port), nexstar(nexstar)
+GPS::GPS(HardwareSerial &port) : Singleton(this), _port(port)
 {
 }
 
@@ -48,7 +50,7 @@ bool GPS::wait_for_fix(uint16_t timeout_sec) {
   //displayGPSInfo(gps, Serial);
   syncDateTime();
   if(has_time()) {
-    nexstar.set_time();
+    Processor::instance()->request_nexstar_sync();
   }
   return has_fix();
 }
@@ -89,7 +91,7 @@ void GPS::debug(Stream &stream, bool raw) {
 }
 
 void GPS::syncDateTime() {
-  /*
+  
   if(! gps.date.isValid() || ! gps.time.isValid() || gps.date.year() < 2017) { // hardcoded number, ok, but let's assume for a second we're not time traveling...
     return;
   }
@@ -103,10 +105,12 @@ void GPS::syncDateTime() {
     gps.date.year() - 1970,
   };
   time_t t = makeTime(datetime);
+  /*
   //Serial.print("UNIX time: "); Serial.println(t);
   RTC.set(t);
   setTime(t);
   */
+  RTC::instance()->set_time(t);
 }
 
 void displayGPSInfo(TinyGPSPlus &gps, Stream &stream)
