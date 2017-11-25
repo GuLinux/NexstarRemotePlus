@@ -15,6 +15,7 @@ public:
   void sleep();
   void resume();
   void close();
+  inline bool suspended() const { return _suspended; }
   void debug(Stream &stream, bool raw=false);
   inline bool has_time() { return gps.date.isValid() && gps.time.isValid() && gps.date.year() > 2016; } // hardcoded number, ok, but let's assume for a second we're not time traveling...
   inline bool has_location() const { return gps.location.isValid(); }
@@ -22,6 +23,7 @@ public:
 private:
   HardwareSerial &_port;
   TinyGPSPlus gps;
+  bool _suspended = false;
   void send_nmea(const String &command);
   void syncDateTime();
   void sync_nexstar();

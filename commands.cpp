@@ -56,7 +56,7 @@ void Commands::handle(const String &command) {
   */
   if(
       parsed.handle("PING", [this](const Command &) { PCStream::instance()->current().println("PONG"); }) ||
-      parsed.handle("GPSFIX", [this](const Command &c) { gps_fix(c); }) ||
+      parsed.handle("GPSWAKE", [this](const Command &c) { wake_gps(c); }) ||
       parsed.handle("GPSDEBUG", [this](const Command &c) { gps_debug(c); }) ||
       parsed.handle("BTNAME", [this](const Command &c) { bluetooth_name(c); }) ||
       parsed.handle("BTPIN", [this](const Command &c) { bluetooth_pin(c); }) ||
@@ -65,7 +65,7 @@ void Commands::handle(const String &command) {
   )
     return;
   PCStream::instance()->current().print(F("Unrecognized command: ")); PCStream::instance()->current().print(parsed.name); PCStream::instance()->current().println("#");
-  PCStream::instance()->current().println(F("Available commands: PING, GPSFIX, GPSDEBUG[=raw], BTNAME[=name], BTPIN[=pin],TZINFO[=tz,dst]"));
+  PCStream::instance()->current().println(F("Available commands: PING, GPSWAKE, GPSDEBUG[=raw], BTNAME[=name], BTPIN[=pin],TZINFO[=tz,dst]"));
 }
 
 void Commands::bluetooth_settings_changed() {
@@ -109,8 +109,8 @@ void Commands::change_tz(const Command &command) {
 
 
 
-void Commands::gps_fix(const Command &command) {
-  Processor::instance()->request_gps_fix();
+void Commands::wake_gps(const Command &command) {
+  Processor::instance()->request_gps_wakeup();
 }
 
 void Commands::time(const Command &command) {

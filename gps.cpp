@@ -16,6 +16,7 @@ void GPS::sleep() {
   for (uint8_t i = 0; i < sizeof(sleepMessage); i++)
     _port.write(sleepMessage[i]);
   delay(1000);
+  _suspended = true;
 }
 
 void GPS::resume() {
@@ -23,6 +24,7 @@ void GPS::resume() {
   for (int i = 0; i < 10; i++)
     _port.write("\xFF");
   delay(500);
+  _suspended = false;
 }
 
 void GPS::open() {

@@ -48,14 +48,20 @@ void OSD::button_pressed() {
 void OSD::action(uint8_t code) {
   auto set_gps_timeout = [this](int minutes) {
     Settings::instance()->gps_timeout(60 * minutes);
-    show_message(String("GPS Timeout set to 1 minute"));
+    if(minutes > 0) {
+      show_message(String("GPS Timeout set to ") + minutes + " minutes");
+    } else {
+      show_message(String("GPS set to no timeout "));
+    }
+    Processor::instance()->set_gps_expire();
   };
   switch(code) {
-    case(ACTION_GPS_FIX): Processor::instance()->request_gps_fix(); break;
-    case(ACTION_SET_GPS_TIMEOUT_1M): set_gps_timeout(1); break;
-    case(ACTION_SET_GPS_TIMEOUT_2M): set_gps_timeout(2); break;
+    case(ACTION_GPS_WAKEUP): Processor::instance()->request_gps_wakeup(); break;
     case(ACTION_SET_GPS_TIMEOUT_5M): set_gps_timeout(5); break;
     case(ACTION_SET_GPS_TIMEOUT_10M): set_gps_timeout(10); break;
+    case(ACTION_SET_GPS_TIMEOUT_20M): set_gps_timeout(20); break;
+    case(ACTION_SET_GPS_TIMEOUT_40M): set_gps_timeout(40); break;
+    case(ACTION_SET_GPS_TIMEOUT_INFINITE): set_gps_timeout(0); break;
     case(ACTION_SET_DAYLIGHT_SAVING_OFF): Settings::instance()->daylight_saving(0); show_message("Daylight saving set to OFF"); break;
     case(ACTION_NEXSTAR_SYNC): Processor::instance()->request_nexstar_sync(); break;
     case(ACTION_SET_DAYLIGHT_SAVING_ON): Settings::instance()->daylight_saving(1); show_message("Daylight saving set to ON"); break;

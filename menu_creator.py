@@ -25,14 +25,15 @@ def entry2menu(entry):
     return '    {{ {uid}, "{label}", {on_shortpress}, {on_longpress}, }},'.format(**entry)
 
 add_entry('MENU_ROOT', '', 'MENU_GPS', 'MENU_GPS')
-add_entry('MENU_GPS', 'GPS', 'MENU_NEXSTAR', 'MENU_GPS_FIX')
-add_entry('MENU_GPS_FIX', 'GPS Fix', 'MENU_GPS_TIMEOUT', 'ACTION_GPS_FIX')
+add_entry('MENU_GPS', 'GPS', 'MENU_NEXSTAR', 'MENU_GPS_WAKEUP')
+add_entry('MENU_GPS_WAKEUP', 'GPS Wakeup', 'MENU_GPS_TIMEOUT', 'ACTION_GPS_WAKEUP')
 
-add_entry('MENU_GPS_TIMEOUT', 'GPS Timeout', 'MENU_GPS_FIX', 'MENU_GPS_TIMEOUT_1M')
-add_entry('MENU_GPS_TIMEOUT_1M', 'GPS Timeout:\\n1 minute', 'MENU_GPS_TIMEOUT_2M', 'ACTION_SET_GPS_TIMEOUT_1M')
-add_entry('MENU_GPS_TIMEOUT_2M', 'GPS Timeout:\\n2 minutes', 'MENU_GPS_TIMEOUT_5M', 'ACTION_SET_GPS_TIMEOUT_2M')
+add_entry('MENU_GPS_TIMEOUT', 'GPS Timeout', 'MENU_GPS_WAKEUP', 'MENU_GPS_TIMEOUT_INFINITE')
 add_entry('MENU_GPS_TIMEOUT_5M', 'GPS Timeout:\\n5 minutes', 'MENU_GPS_TIMEOUT_10M', 'ACTION_SET_GPS_TIMEOUT_5M')
-add_entry('MENU_GPS_TIMEOUT_10M', 'GPS Timeout:\\n10 minutes', 'MENU_GPS_TIMEOUT_1M', 'ACTION_SET_GPS_TIMEOUT_10M')
+add_entry('MENU_GPS_TIMEOUT_10M', 'GPS Timeout:\\n10 minutes', 'MENU_GPS_TIMEOUT_20M', 'ACTION_SET_GPS_TIMEOUT_10M')
+add_entry('MENU_GPS_TIMEOUT_20M', 'GPS Timeout:\\n20 minutes', 'MENU_GPS_TIMEOUT_40M', 'ACTION_SET_GPS_TIMEOUT_20M')
+add_entry('MENU_GPS_TIMEOUT_40M', 'GPS Timeout:\\n40 minutes', 'MENU_GPS_TIMEOUT_INFINITE', 'ACTION_SET_GPS_TIMEOUT_40M')
+add_entry('MENU_GPS_TIMEOUT_INFINITE', 'GPS Timeout:\\nNo timeout', 'MENU_GPS_TIMEOUT_5M', 'ACTION_SET_GPS_TIMEOUT_INFINITE')
 
 add_entry('MENU_NEXSTAR', 'Nexstar', 'MENU_DATE_TIME', 'MENU_NEXSTAR_SYNC')
 add_entry('MENU_NEXSTAR_SYNC', 'Nexstar Sync', 'MENU_NEXSTAR_SYNC', 'ACTION_NEXSTAR_SYNC')

@@ -48,8 +48,10 @@ void setup() {
  // if(timeStatus()!= timeSet)
  //   Serial.println(F("Error setting time from RTC"));
   gps.open();
+  gps.resume();
   //gps.sleep();
   nexstar.setup();
+  processor.setup();
   digitalWrite(LED_BUILTIN, HIGH);
   Serial.setTimeout(2000);
   //processor.gps_getfix();

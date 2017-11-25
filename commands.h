@@ -21,7 +21,7 @@ private:
   uint8_t _buffer_len;
   void handle(const String &command);
   // Command handlers
-  void gps_fix(const Command &command);
+  void wake_gps(const Command &command);
   void gps_debug(const Command &command);
   void bluetooth_name(const Command &command);
   void bluetooth_pin(const Command &command);
