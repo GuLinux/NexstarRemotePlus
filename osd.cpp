@@ -34,7 +34,7 @@ void OSD::tick() {
 
 void OSD::render(Print &print) {
   if(message.length() > 0) {
-    print.print(message);
+    print.println(message);
   }
   print.print(entries[current_entry].label);
 }

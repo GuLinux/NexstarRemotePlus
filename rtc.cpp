@@ -43,7 +43,7 @@ time_t RTC::get_time_t() {
     get_day_of_week(rtc),
     rtc->day(),
     rtc->month(),
-    y2kYearToTm(rtc->year()),
+    static_cast<uint8_t>(y2kYearToTm(rtc->year())),
   };
   /*
   Serial.print(rtc->day()); Serial.print("/");

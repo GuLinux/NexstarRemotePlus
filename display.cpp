@@ -27,7 +27,11 @@
 #define CLOCK_TOP 56
 #define OSD_HEIGHT CLOCK_TOP - 1
 
-Display::Display(): Singleton<Display>(this), osd_canvas(OSD_WIDTH, OSD_HEIGHT) {
+#define OLED_DC     17
+#define OLED_CS     18
+#define OLED_RESET  19
+
+Display::Display(): Singleton<Display>(this), oled(OLED_DC, OLED_RESET, OLED_CS), osd_canvas(OSD_WIDTH, OSD_HEIGHT) {
 
 }
 
@@ -42,28 +46,18 @@ void Display::begin() {
 
 
 void Display::update() {
-  String time;
-  time += year();
-  time += "/";
-  time += month();
-  time += "/";
-  time += day();
-  time += " ";
-  time += hour();
-  time += ":";
-  time += minute();
-  time += ":";
-  time += second();
-  
+  char datetime[20];
+  sprintf(datetime, "%02d/%02d/%04d %02d:%02d:%02d", day(), month(), year(), hour(), minute(), second());
+
   oled.setTextSize(1);
   oled.clearDisplay();
   oled.setCursor(0,CLOCK_TOP);
-  oled.print(time);
+  oled.print(datetime);
   osd_canvas.setCursor(0,0);
   osd_canvas.fillScreen(BLACK);
   OSD::instance()->render(osd_canvas);
   oled.drawBitmap(0, 0, osd_canvas.getBuffer(), osd_canvas.width(), osd_canvas.height(), WHITE);
-  if(Serial.isConnected()) {
+  if(connection == Processor::USB) {
     oled.drawBitmap(ICONS_X, ICON_Y(0), icon_usb, ICONS_SIZE, ICONS_SIZE, WHITE);
   } else {
     oled.drawBitmap(ICONS_X, ICON_Y(0), icon_bluetooth, ICONS_SIZE, ICONS_SIZE, WHITE);

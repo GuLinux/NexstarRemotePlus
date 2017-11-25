@@ -2,6 +2,7 @@
 #include <Adafruit_SSD1306.h>
 #include "singleton.h"
 #include "Arduino.h"
+#include "processor.h"
 
 #pragma once
 
@@ -10,8 +11,10 @@ public:
   Display();
   void begin();
   void update();
+  inline void set_connection(Processor::Connection connection) { this->connection = connection; }
 private:
   Adafruit_SSD1306 oled;
   GFXcanvas1 osd_canvas;
+  Processor::Connection connection;
 };
 

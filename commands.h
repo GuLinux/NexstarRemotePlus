@@ -8,7 +8,7 @@ class Settings;
 struct Command;
 class PCStream;
 class Processor;
-typedef 
+
 class Commands : public Singleton<Commands> {
 public:
   Commands();

@@ -15,9 +15,13 @@ public:
   inline void request_gps_fix() { _gps_fix_requested = true; }
   inline void request_nexstar_sync() { _sync_nexstar = true; }
   inline void record_button_press(bool longpress) {}
+  enum Connection { USB, Bluetooth, Unset};
 private:
   void gps_fix();
   void nexstar_sync();
+  void check_connection();
+
+  Connection _connection = Unset;
 
   bool _gps_fix_requested = false;
   bool _sync_nexstar = false;

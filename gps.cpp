@@ -3,6 +3,7 @@
 #include "processor.h"
 #include "TimeLib.h"
 #include "rtc.h"
+#include "pc_stream.h"
 
 GPS::GPS(HardwareSerial &port) : Singleton(this), _port(port)
 {
@@ -26,14 +27,22 @@ void GPS::resume() {
 
 void GPS::open() {
   _port.begin(9600);
-//  send_nmea("PUBX,41,1,3,3,115200,0");
-//  _port.end();
-//  _port.begin(57600);
-
 }
 
 void GPS::close() {
   _port.end();
+}
+
+void GPS::process() {
+  while (_port.available()) {
+    auto c = _port.read();
+    if(gps.encode(c)) {
+      PCStream::instance()->current().println("Got GPS information");
+      displayGPSInfo(gps, PCStream::instance()->current());
+    }
+  }
+  if(has_time() || has_location()) {
+  }
 }
 
 bool GPS::wait_for_fix(uint16_t timeout_sec) {
@@ -49,9 +58,6 @@ bool GPS::wait_for_fix(uint16_t timeout_sec) {
   }
   //displayGPSInfo(gps, Serial);
   syncDateTime();
-  if(has_time()) {
-    Processor::instance()->request_nexstar_sync();
-  }
   return has_fix();
 }
 
@@ -92,7 +98,7 @@ void GPS::debug(Stream &stream, bool raw) {
 
 void GPS::syncDateTime() {
   
-  if(! gps.date.isValid() || ! gps.time.isValid() || gps.date.year() < 2017) { // hardcoded number, ok, but let's assume for a second we're not time traveling...
+  if(! has_time() ) {
     return;
   }
   tmElements_t datetime {
@@ -102,9 +108,10 @@ void GPS::syncDateTime() {
     0, // TODO: weekday?
     gps.date.day(),
     gps.date.month(),
-    gps.date.year() - 1970,
+    static_cast<uint8_t>(gps.date.year() - 1970),
   };
   time_t t = makeTime(datetime);
+  Serial.print("UNIX time: "); Serial.println(t);
   /*
   //Serial.print("UNIX time: "); Serial.println(t);
   RTC.set(t);
@@ -165,3 +172,4 @@ void displayGPSInfo(TinyGPSPlus &gps, Stream &stream)
   stream.print(F("; sats: ")); stream.println(gps.satellites.value());
   stream.println();
 }
+

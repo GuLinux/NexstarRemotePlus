@@ -6,15 +6,38 @@
 #include "settings.h"
 #include "pc_stream.h"
 #include "osd.h"
+#include "display.h"
 
 Processor::Processor() : Singleton<Processor>(this) {}
 
+Stream *get_stream(Processor::Connection connection) {
+  if(connection == Processor::USB)
+    return &Serial;
+  return &Bluetooth::instance()->port();
+}
+//uint32_t last_loop_run = 0;
 void Processor::loop() {
-  gps_fix();
+//  Serial.print("Elapsed: "); Serial.println(millis() - last_loop_run);
+//  last_loop_run = millis();
+  check_connection();
+  //gps_fix();
+  GPS::instance()->process();
   nexstar_sync();
   Commands::instance()->read();
   Nexstar::instance()->port().write(Commands::instance()->buffer(), Commands::instance()->buffer_len());
   Nexstar::instance()->read_to(PCStream::instance()->current());
+  OSD::instance()->tick();
+  Display::instance()->update();
+}
+
+void Processor::check_connection() {
+  Connection connection = static_cast<bool>(Serial) ? USB : Bluetooth;
+
+//  if(connection != this->_connection) {
+    this->_connection = connection;
+    Display::instance()->set_connection(connection);
+    PCStream::instance()->set_current(get_stream(connection));
+//  }
 }
 
 void Processor::gps_fix() {

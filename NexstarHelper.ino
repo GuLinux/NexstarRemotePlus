@@ -23,7 +23,7 @@
 RTC rtc;
 Display display;
 Settings settings;
-PCStream pc_stream{Serial};
+PCStream pc_stream{&Serial};
 Bluetooth bluetooth{Serial3}; // RX, TX
 Nexstar nexstar{Serial1};
 
@@ -48,7 +48,7 @@ void setup() {
  // if(timeStatus()!= timeSet)
  //   Serial.println(F("Error setting time from RTC"));
   gps.open();
-  gps.sleep();
+  //gps.sleep();
   nexstar.setup();
   digitalWrite(LED_BUILTIN, HIGH);
   Serial.setTimeout(2000);
@@ -56,7 +56,7 @@ void setup() {
   //processor.sync_nexstar();
   pinMode(BUTTON_PIN, INPUT);
   attachInterrupt(BUTTON_PIN, buttonChanged, FALLING);
-
+/*
   // Pause the timer while we're configuring it
   display_timer.pause();
   // Set up period
@@ -72,6 +72,7 @@ void setup() {
 
   // Start the timer counting
   display_timer.resume();
+  */
 }
 
 void loop() {
@@ -81,18 +82,9 @@ void loop() {
 void buttonChanged() {
   osd.button_pressed();
 }
-volatile bool usb_connected = false;
 
 void on_timer() {
   osd.tick();
-  bool _usb_connected = Serial.isConnected();
-  if(_usb_connected && ! usb_connected) {
-    pc_stream.set_current(Serial);
-  }
-  else if(! _usb_connected && usb_connected) {
-    pc_stream.set_current(bluetooth.port());
-  }
-  usb_connected = _usb_connected;
   display.update();
 }
 

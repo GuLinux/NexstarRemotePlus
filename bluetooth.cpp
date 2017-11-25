@@ -1,5 +1,5 @@
 #include "bluetooth.h"
-#include "settings.h";
+#include "settings.h"
 
 
 Bluetooth::Bluetooth(HardwareSerial &port) : Singleton<Bluetooth>(this), _port(port) {}
