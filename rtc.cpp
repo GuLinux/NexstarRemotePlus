@@ -63,3 +63,16 @@ void RTC::set_time(time_t time) {
   rtc->set(time_elements.Second, time_elements.Minute, time_elements.Hour, time_elements.Wday, time_elements.Day, time_elements.Month, tmYearToY2k(time_elements.Year));
 }
 
+void RTC::write_ee(const uint32_t address, const uint8_t value) {
+  rtc->eeprom_write(address, value);
+}
+
+uint8_t RTC::read_ee(const uint32_t address) {
+  return rtc->eeprom_read(address);
+}
+
+void RTC::update_ee(const uint32_t address, const uint8_t value) {
+  if(read_ee(address) != value)
+    write_ee(address, value);
+}
+

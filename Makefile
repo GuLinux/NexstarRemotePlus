@@ -1,6 +1,6 @@
-USB_PORT=ttyACM0
-BUILD_DIR=$(PWD)/.build/target
-CACHE_DIR=$(PWD)/.build/cache
+USB_PORT ?= ttyACM0
+BUILD_DIR := $(PWD)/.build/target
+CACHE_DIR := $(PWD)/.build/cache
 
 all: build upload usb
 	
@@ -20,3 +20,4 @@ clean:
 usb:
 	picocom -c /dev/$(USB_PORT)
 
+# vim: noexpandtab:
