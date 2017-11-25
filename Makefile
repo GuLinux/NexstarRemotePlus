@@ -2,7 +2,7 @@ USB_PORT=ttyACM0
 BUILD_DIR=$(PWD)/.build/target
 CACHE_DIR=$(PWD)/.build/cache
 
-all: build
+all: build upload usb
 	
 
 build_dir:
@@ -17,4 +17,6 @@ upload: build
 clean:
 	rm -rf $(BUILD_DIR) $(CACHE_DIR)
 
+usb:
+	picocom -c /dev/$(USB_PORT)
 
