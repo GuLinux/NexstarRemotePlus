@@ -51,7 +51,7 @@ void Processor::gps_power_management() {
     _gps_wakeup_requested = false;
   }
 
-  if(_gps_expire > 0 && millis() > _gps_expire && ! GPS::instance()->suspended() ) {
+  if(GPS::instance()->has_fix() || ( ! GPS::instance()->suspended() && _gps_expire > 0 && millis() > _gps_expire) ) {
     GPS::instance()->sleep();
   }
 }
