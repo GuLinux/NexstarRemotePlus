@@ -3,8 +3,8 @@
 struct MenuEntry {
   uint8_t id;
   String label;
-  uint8_t on_shortpress;
-  uint8_t on_longpress;
+  uint8_t on_click;
+  uint8_t on_double_click;
 };
 
 #define ACTIONS_BASE 0xA0
@@ -128,4 +128,4 @@ static MenuEntry entries[] {
     { MENU_SET_TIMEZONE_GMT_P10, "Set Timezone:\nGMT+10", MENU_SET_TIMEZONE_GMT_P11, ACTION_SET_TIMEZONE_GMT_P10, },
     { MENU_SET_TIMEZONE_GMT_P11, "Set Timezone:\nGMT+11", MENU_SET_TIMEZONE_GMT_P12, ACTION_SET_TIMEZONE_GMT_P11, },
     { MENU_SET_TIMEZONE_GMT_P12, "Set Timezone:\nGMT+12", MENU_SET_TIMEZONE_GMT_M12, ACTION_SET_TIMEZONE_GMT_P12, },
-};
+};static uint16_t len_entries = 41;

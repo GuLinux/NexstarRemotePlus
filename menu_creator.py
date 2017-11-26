@@ -5,24 +5,24 @@ entries_definitions = {}
 actions = {}
 
 
-def add_entry(uid, label, on_shortpress, on_longpress):
+def add_entry(uid, label, on_click, on_double_click):
     global entries
     entries_definitions[uid] = '0x{:02X}'.format(len(entries))
-    entry = {'uid': uid, 'label': label, 'on_shortpress': on_shortpress, 'on_longpress': on_longpress}
+    entry = {'uid': uid, 'label': label, 'on_click': on_click, 'on_double_click': on_double_click}
     entries.append(entry)
 
 def find_actions():
     global entries
     for entry in entries:
-        on_shortpress = entry['on_shortpress']
-        on_longpress = entry['on_longpress']
-        if on_shortpress not in entries_definitions:
-            actions[on_shortpress] = 'ACTIONS_BASE + 0x{:02X}'.format(len(actions))
-        if on_longpress not in entries_definitions:
-            actions[on_longpress] = 'ACTIONS_BASE + 0x{:02X}'.format(len(actions))
+        on_click = entry['on_click']
+        on_double_click = entry['on_double_click']
+        if on_click not in entries_definitions:
+            actions[on_click] = 'ACTIONS_BASE + 0x{:02X}'.format(len(actions))
+        if on_double_click not in entries_definitions:
+            actions[on_double_click] = 'ACTIONS_BASE + 0x{:02X}'.format(len(actions))
 
 def entry2menu(entry):
-    return '    {{ {uid}, "{label}", {on_shortpress}, {on_longpress}, }},'.format(**entry)
+    return '    {{ {uid}, "{label}", {on_click}, {on_double_click}, }},'.format(**entry)
 
 add_entry('MENU_ROOT', '', 'MENU_GPS', 'MENU_GPS')
 add_entry('MENU_GPS', 'GPS', 'MENU_NEXSTAR', 'MENU_GPS_WAKEUP')
@@ -83,8 +83,8 @@ def write_menu():
 struct MenuEntry {
   uint8_t id;
   String label;
-  uint8_t on_shortpress;
-  uint8_t on_longpress;
+  uint8_t on_click;
+  uint8_t on_double_click;
 };
 
 #define ACTIONS_BASE 0xA0
@@ -95,5 +95,6 @@ struct MenuEntry {
 ''')
         f.write('\n'.join([entry2menu(x) for x in entries]))
         f.write('\n};')
+        f.write('static uint16_t len_entries = {};\n'.format(len(entries)))
 
 write_menu()
