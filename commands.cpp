@@ -69,11 +69,7 @@ void Commands::handle(const String &command) {
 }
 
 void Commands::bluetooth_settings_changed() {
-#if HC_MODEL == 5
-  PCStream::instance()->current().println(F("With bluetooth module HC-05 you need to manually reboot into AT mode (pushing the setup button)."));
-#else
   PCStream::instance()->current().println(F("Bluetooth settings will be applied at next reboot"));
-#endif
 }
 
 void Commands::bluetooth_name(const Command &command) {
