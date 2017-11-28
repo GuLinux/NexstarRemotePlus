@@ -3,6 +3,7 @@
 #include "icons/icons.h"
 #include "gps.h"
 #include "osd.h"
+#include "bluetooth.h"
 
 #define DRAW_ICON_BORDER 0
 #define ICON_TOP 0
@@ -60,13 +61,15 @@ void Display::update() {
   if(connection == Processor::USB) {
     oled.drawBitmap(ICONS_X, ICON_Y(0), icon_usb, ICONS_SIZE, ICONS_SIZE, WHITE);
   } else {
-    oled.drawBitmap(ICONS_X, ICON_Y(0), icon_bluetooth, ICONS_SIZE, ICONS_SIZE, WHITE);
+    oled.drawBitmap(ICONS_X, ICON_Y(0), Bluetooth::instance()->isConnected() ? icon_bluetooth_connected : icon_bluetooth, ICONS_SIZE, ICONS_SIZE, WHITE);
+    //oled.drawBitmap(ICONS_X, ICON_Y(0), icon_bluetooth, ICONS_SIZE, ICONS_SIZE, WHITE);
   }
   if(GPS::instance()->has_fix()) {
     oled.drawBitmap(ICONS_X, ICON_Y(1), icon_gps_on, ICONS_SIZE, ICONS_SIZE, WHITE);
   } else {
     oled.drawBitmap(ICONS_X, ICON_Y(1), icon_gps_off, ICONS_SIZE, ICONS_SIZE, WHITE);
   }
+  oled.drawBitmap(ICONS_X, ICON_Y(2), icon_battery_full, ICONS_SIZE, ICONS_SIZE/2, WHITE);
 #if DRAW_ICON_BORDER == 1
   oled.drawRect(ICONS_BORDER_X, ICON_BORDER_Y(0), ICONS_BORDER_RECT, ICONS_BORDER_RECT, WHITE);
   oled.drawRect(ICONS_BORDER_X, ICON_BORDER_Y(1), ICONS_BORDER_RECT, ICONS_BORDER_RECT, WHITE);

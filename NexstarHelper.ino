@@ -38,7 +38,9 @@ OSD osd;
 
 
 void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(9600);
+  settings.load();
   bluetooth.setup();
   buttons.setup(BUTTON_PIN);
   rtc.setup();
@@ -46,7 +48,7 @@ void setup() {
   Serial.println("Starting up NexStarRemote+");
   
   digitalWrite(LED_BUILTIN, LOW);
-  settings.load();
+
 
  // if(timeStatus()!= timeSet)
  //   Serial.println(F("Error setting time from RTC"));

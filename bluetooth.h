@@ -11,6 +11,7 @@ public:
   void setup();
   String atCommand(const String &msg);
   inline HardwareSerial &port() { return _port; }
+  bool isConnected() const;
 private:
   HardwareSerial &_port;
 };
