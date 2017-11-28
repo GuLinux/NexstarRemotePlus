@@ -39,8 +39,8 @@ void GPS::process() {
   while (_port.available()) {
     auto c = _port.read();
     if(gps.encode(c)) {
-//      PCStream::instance()->current().println("Got GPS information");
-//      displayGPSInfo(gps, PCStream::instance()->current());
+     PCStream::instance()->current().println("Got GPS information");
+     displayGPSInfo(gps, PCStream::instance()->current());
     }
   }
 }

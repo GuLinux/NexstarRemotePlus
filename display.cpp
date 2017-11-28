@@ -27,9 +27,9 @@
 #define CLOCK_TOP 56
 #define OSD_HEIGHT CLOCK_TOP - 1
 
-#define OLED_DC     17
-#define OLED_CS     18
-#define OLED_RESET  19
+#define OLED_DC     3
+#define OLED_CS     7
+#define OLED_RESET  31
 
 Display::Display(): Singleton<Display>(this), oled(OLED_DC, OLED_RESET, OLED_CS), osd_canvas(OSD_WIDTH, OSD_HEIGHT) {
 

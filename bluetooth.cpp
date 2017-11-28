@@ -1,12 +1,22 @@
 #include "bluetooth.h"
 #include "settings.h"
 
+#define STATE_PIN 13
+#define KEY_PIN 11
+#define EN_PIN 12
 
 Bluetooth::Bluetooth(HardwareSerial &port) : Singleton<Bluetooth>(this), _port(port) {}
 
 void Bluetooth::setup() {
   _port.setTimeout(2000);
 #if HC_MODEL == 5
+    pinMode(STATE_PIN, INPUT);
+    pinMode(KEY_PIN, OUTPUT);
+    pinMode(EN_PIN, OUTPUT);
+    digitalWrite(EN_PIN, LOW);
+    digitalWrite(KEY_PIN, HIGH);
+    delay(500);
+    digitalWrite(EN_PIN, HIGH);
     _port.begin(38400);
     //_port.println("Bluetooth settings--");
     for(int i = 0; i < 20; i++) {
@@ -17,6 +27,7 @@ void Bluetooth::setup() {
     atCommand(String("AT+NAME=") + Settings::instance()->bluetooth_name());
     atCommand(String("AT+PIN=") + Settings::instance()->bluetooth_pin());
     atCommand("AT+RESET");
+    digitalWrite(KEY_PIN, LOW);
   }
   _port.end();
   _port.begin(9600);

@@ -17,15 +17,17 @@
 
 // Wiring: green -> TX, blue -> RX
 
+// Voltmeter: AnalogPin 10, R1=, R2=8180
+
 
 RTC rtc;
 Display display;
 Settings settings;
 PCStream pc_stream{&Serial};
-Bluetooth bluetooth{Serial3}; // RX, TX
+Bluetooth bluetooth{Serial2}; // RX, TX
 Nexstar nexstar{Serial1};
 
-GPS gps{Serial2};
+GPS gps{Serial3};
 HardwareTimer display_timer(1);
 
 
@@ -37,6 +39,7 @@ OSD osd;
 
 void setup() {
   Serial.begin(9600);
+  bluetooth.setup();
   buttons.setup(BUTTON_PIN);
   rtc.setup();
   display.begin();
@@ -44,7 +47,7 @@ void setup() {
   
   digitalWrite(LED_BUILTIN, LOW);
   settings.load();
-  bluetooth.setup();
+
  // if(timeStatus()!= timeSet)
  //   Serial.println(F("Error setting time from RTC"));
   gps.open();
