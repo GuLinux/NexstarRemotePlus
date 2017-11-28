@@ -4,6 +4,8 @@
 #include "gps.h"
 #include "osd.h"
 #include "bluetooth.h"
+#include "battery.h"
+#include "pc_stream.h"
 
 #define DRAW_ICON_BORDER 0
 #define ICON_TOP 0
@@ -58,7 +60,7 @@ void Display::update() {
   osd_canvas.fillScreen(BLACK);
   OSD::instance()->render(osd_canvas);
   oled.drawBitmap(0, 0, osd_canvas.getBuffer(), osd_canvas.width(), osd_canvas.height(), WHITE);
-  if(connection == Processor::USB) {
+  if(PCStream::instance()->connection() == PCStream::USB) {
     oled.drawBitmap(ICONS_X, ICON_Y(0), icon_usb, ICONS_SIZE, ICONS_SIZE, WHITE);
   } else {
     oled.drawBitmap(ICONS_X, ICON_Y(0), Bluetooth::instance()->isConnected() ? icon_bluetooth_connected : icon_bluetooth, ICONS_SIZE, ICONS_SIZE, WHITE);
@@ -69,7 +71,17 @@ void Display::update() {
   } else {
     oled.drawBitmap(ICONS_X, ICON_Y(1), icon_gps_off, ICONS_SIZE, ICONS_SIZE, WHITE);
   }
-  oled.drawBitmap(ICONS_X, ICON_Y(2), icon_battery_full, ICONS_SIZE, ICONS_SIZE/2, WHITE);
+
+  // Battery
+  if(Battery::instance()->millivolts() > BATTERY_FULL_MV)
+    oled.drawBitmap(ICONS_X, ICON_Y(2), icon_battery_full, ICONS_SIZE, ICONS_SIZE/2, WHITE);
+  else if(Battery::instance()->millivolts() > BATTERY_MID_MV)
+    oled.drawBitmap(ICONS_X, ICON_Y(2), icon_battery_high, ICONS_SIZE, ICONS_SIZE/2, WHITE);
+  else if(Battery::instance()->millivolts() > BATTERY_MID_MV)
+    oled.drawBitmap(ICONS_X, ICON_Y(2), icon_battery_mid, ICONS_SIZE, ICONS_SIZE/2, WHITE);
+  else
+    oled.drawBitmap(ICONS_X, ICON_Y(2), icon_battery_low, ICONS_SIZE, ICONS_SIZE/2, WHITE);
+
 #if DRAW_ICON_BORDER == 1
   oled.drawRect(ICONS_BORDER_X, ICON_BORDER_Y(0), ICONS_BORDER_RECT, ICONS_BORDER_RECT, WHITE);
   oled.drawRect(ICONS_BORDER_X, ICON_BORDER_Y(1), ICONS_BORDER_RECT, ICONS_BORDER_RECT, WHITE);

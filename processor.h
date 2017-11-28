@@ -15,7 +15,6 @@ public:
   inline void request_gps_wakeup() { _gps_wakeup_requested = true; }
   inline void request_nexstar_sync() { _sync_nexstar = true; }
   inline void record_button_press(bool longpress) {}
-  enum Connection { USB, Bluetooth, Unset};
   void set_gps_expire();
   void setup();
 private:
@@ -23,8 +22,6 @@ private:
 
   void nexstar_sync();
   void check_connection();
-
-  Connection _connection = Unset;
 
   bool _gps_wakeup_requested = false;
   bool _sync_nexstar = false;

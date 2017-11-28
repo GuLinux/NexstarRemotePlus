@@ -15,15 +15,7 @@ void Processor::setup() {
   set_gps_expire();
 }
 
-Stream *get_stream(Processor::Connection connection) {
-  if(connection == Processor::USB)
-    return &Serial;
-  return &Bluetooth::instance()->port();
-}
-
 void Processor::loop() {
-  check_connection();
-
   GPS::instance()->process();
   gps_power_management();
 
@@ -35,13 +27,6 @@ void Processor::loop() {
   Display::instance()->update();
 }
 
-void Processor::check_connection() {
-  Connection connection = static_cast<bool>(Serial) ? USB : Bluetooth;
-
-  this->_connection = connection;
-  Display::instance()->set_connection(connection);
-  PCStream::instance()->set_current(get_stream(connection));
-}
 
 void Processor::gps_power_management() {
   if(_gps_wakeup_requested && GPS::instance()->suspended() ) {

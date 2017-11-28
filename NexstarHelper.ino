@@ -10,6 +10,7 @@
 #include "pc_stream.h"
 #include "osd.h"
 #include "buttons.h"
+#include "battery.h"
 
 #include <TimeLib.h>
 //#define BUTTON_PIN 3
@@ -17,13 +18,13 @@
 
 // Wiring: green -> TX, blue -> RX
 
-// Voltmeter: AnalogPin 10, R1=, R2=8180
 
 
+Battery battery;
 RTC rtc;
 Display display;
 Settings settings;
-PCStream pc_stream{&Serial};
+PCStream pc_stream;
 Bluetooth bluetooth{Serial2}; // RX, TX
 Nexstar nexstar{Serial1};
 
@@ -46,6 +47,7 @@ void setup() {
   rtc.setup();
   display.begin();
   Serial.println("Starting up NexStarRemote+");
+  battery.setup();
   
   digitalWrite(LED_BUILTIN, LOW);
 
