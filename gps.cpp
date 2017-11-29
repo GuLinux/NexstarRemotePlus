@@ -4,12 +4,13 @@
 #include "TimeLib.h"
 #include "rtc.h"
 #include "pc_stream.h"
+#include "logger.h"
 
 GPS::GPS(HardwareSerial &port) : Singleton(this), _port(port)
 {
 }
 
-void displayGPSInfo(TinyGPSPlus &gps, Stream &stream);
+void debug_gps_info(TinyGPSPlus &gps);
 
 void GPS::sleep() {
   static const char sleepMessage[] = {0xB5, 0x62, 0x02, 0x41, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x4D, 0x3B};
@@ -38,29 +39,12 @@ void GPS::close() {
 void GPS::process() {
   while (_port.available()) {
     auto c = _port.read();
+    TRACE().no_newline() << c;
     if(gps.encode(c)) {
-     PCStream::instance()->current().println("Got GPS information");
-     displayGPSInfo(gps, PCStream::instance()->current());
+      debug_gps_info(gps);
     }
   }
 }
-
-bool GPS::wait_for_fix(uint16_t timeout_sec) {
-  auto start = millis();
-  auto expired = [&start, &timeout_sec] { return static_cast<unsigned long>(millis() - start) >= static_cast<unsigned long>(timeout_sec) * 1000l; };
-
-  while ( ! expired() && ! has_fix() ) {
-    while (_port.available() && ! expired()) {
-      gps.encode(_port.read());
-      //if ();
-        //displayGPSInfo(gps, Serial);
-    }
-  }
-  //displayGPSInfo(gps, Serial);
-  syncDateTime();
-  return has_fix();
-}
-
 
 void GPS::send_nmea(const String &command) {
   uint8_t cs = 0;
@@ -76,24 +60,6 @@ void GPS::send_nmea(const String &command) {
   _port.write(higher < 10 ? '0' + higher : 'A' + higher - 10);
   _port.write(lower < 10 ? '0' + lower : 'A' + lower - 10);
   _port.print("\r\n");
-}
-
-void GPS::debug(Stream &stream, bool raw) {
-  while(true) {
-      if(stream.available()) {
-        if(stream.readString() == "stop")
-          return;
-      }
-      while (_port.available()) {
-        int c = _port.read();
-        if(raw)
-          stream.write(c);
-        if ( ! raw && gps.encode(c)) {
-          displayGPSInfo(gps, stream);
-        }
-        syncDateTime();
-    }
-  }
 }
 
 void GPS::syncDateTime() {
@@ -120,56 +86,42 @@ void GPS::syncDateTime() {
   RTC::instance()->set_time(t);
 }
 
-void displayGPSInfo(TinyGPSPlus &gps, Stream &stream)
+void debug_gps_info(TinyGPSPlus &gps)
 {
-  stream.print(F("Location: "));
+  auto dbg = DEBUG();
+  dbg << F("Location: ");
   if (gps.location.isValid())
   {
-    stream.print(gps.location.lat(), 6);
-    stream.print(F(","));
-    Serial.print(gps.location.lng(), 6);
+    dbg << gps.location.lat() << F(", ") << gps.location.lng();
   }
   else
   {
-    stream.print(F("INVALID"));
+    dbg << F("INVALID");
   }
 
-  stream.print(F("  Date/Time: "));
+  dbg << F(", date: ");
   if (gps.date.isValid())
   {
-    stream.print(gps.date.month());
-    stream.print(F("/"));
-    stream.print(gps.date.day());
-    stream.print(F("/"));
-    stream.print(gps.date.year());
-    stream.print(" value="); stream.print(gps.date.value());
+    char date[11];
+    sprintf(date, "%02d/%02d/%04d", gps.date.day(), gps.date.month(), gps.date.year());
+    dbg << date;
   }
   else
   {
-    stream.print(F("INVALID"));
+    dbg << F("INVALID");
   }
 
-  stream.print(F(" "));
+  dbg << F(", time: ");
   if (gps.time.isValid())
   {
-    if (gps.time.hour() < 10) stream.print(F("0"));
-    stream.print(gps.time.hour());
-    stream.print(F(":"));
-    if (gps.time.minute() < 10) stream.print(F("0"));
-    stream.print(gps.time.minute());
-    stream.print(F(":"));
-    if (gps.time.second() < 10) stream.print(F("0"));
-    stream.print(gps.time.second());
-    stream.print(F("."));
-    if (gps.time.centisecond() < 10) stream.print(F("0"));
-    stream.print(gps.time.centisecond());
-    stream.print(" time="); stream.print(gps.time.value());
+    char time[12];
+    sprintf(time, "%02d:%02d:%02d.%02d", gps.time.hour(), gps.time.minute(), gps.time.second(), gps.time.centisecond());
+    dbg << time;
   }
   else
   {
-    stream.print(F("INVALID"));
+    dbg << F("INVALID");
   }
-  stream.print(F("; sats: ")); stream.println(gps.satellites.value());
-  stream.println();
+  dbg << F("; satellites: ") << gps.satellites.value();
 }
 

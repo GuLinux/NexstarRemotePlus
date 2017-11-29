@@ -1,4 +1,5 @@
 #include "bluetooth.h"
+#include "logger.h"
 #include "settings.h"
 
 #define STATE_PIN 13
@@ -22,7 +23,7 @@ void Bluetooth::setup() {
   digitalWrite(EN_PIN, HIGH);
   _port.begin(38400);
   //_port.println("Bluetooth settings--");
-  Serial.println(F("--- Bluetooth command mode ---"));
+  DEBUG() << F("--- Bluetooth command mode ---");
   while(! atCommand("AT").startsWith("OK"))
     delay(100);
   atCommand(String("AT+NAME=") + Settings::instance()->bluetooth_name());
@@ -33,18 +34,18 @@ void Bluetooth::setup() {
   // Turn off AT mode, and reset bluetooth adapter
   digitalWrite(KEY_PIN, LOW);
   atCommand("AT+RESET");
-  Serial.println(F("Bluetooth setup complete"));
+  DEBUG() << F("Bluetooth setup complete");
   _port.end();
   // Start normal serial terminal
   _port.begin(9600);
 }
 
 String Bluetooth::atCommand(const String &msg) {
-  Serial.print(">"); Serial.println(msg);
+  DEBUG() << '>' << msg;
   _port.write(msg.c_str());
   _port.write("\r\n");
   auto result = _port.readString();
-  Serial.print("<"); Serial.println(result);
+  DEBUG() << '<' << result;
   return result;
 }
 

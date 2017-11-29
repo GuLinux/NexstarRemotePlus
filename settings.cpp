@@ -1,5 +1,6 @@
 #include "settings.h"
 #include <EEPROM.h>
+#include "logger.h"
 
 static const char *default_version = "v1.0.1";
 
@@ -29,7 +30,7 @@ void Settings::load() {
   }
 #endif
   if(String(data.version) != default_version) {
-    Serial.println(F("Settings empty, loading defaults"));
+    DEBUG() << F("Settings empty, loading defaults");
     strcpy(data.version, default_version);
     strcpy(data.bluetooth_pin, "0000");
     strcpy(data.bluetooth_name, "NexstarBT");

@@ -22,7 +22,7 @@ void Processor::loop() {
   nexstar_sync();
   Commands::instance()->read();
   Nexstar::instance()->port().write(Commands::instance()->buffer(), Commands::instance()->buffer_len());
-  Nexstar::instance()->read_to(PCStream::instance()->current());
+  Nexstar::instance()->read_to(*PCStream::instance());
   OSD::instance()->tick();
   Display::instance()->update();
 }

@@ -13,6 +13,7 @@
 #include "battery.h"
 
 #include <TimeLib.h>
+#include "logger.h"
 //#define BUTTON_PIN 3
 #define BUTTON_PIN 32
 
@@ -25,6 +26,7 @@ RTC rtc;
 Display display;
 Settings settings;
 PCStream pc_stream;
+Logger logger(pc_stream);
 Bluetooth bluetooth{Serial2}; // RX, TX
 Nexstar nexstar{Serial1};
 
@@ -46,7 +48,7 @@ void setup() {
   buttons.setup(BUTTON_PIN);
   rtc.setup();
   display.begin();
-  Serial.println("Starting up NexStarRemote+");
+  DEBUG() << F("Starting up NexStarRemote+");
   battery.setup();
   
   digitalWrite(LED_BUILTIN, LOW);

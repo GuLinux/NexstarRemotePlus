@@ -28,5 +28,6 @@ private:
   void change_tz(const Command &command);
   void time(const Command &command);
   void bluetooth_settings_changed();
+  void log_level(const Command &command);
 };
 

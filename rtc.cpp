@@ -1,5 +1,6 @@
 #include "rtc.h"
 #include <uRTCLib.h>
+#include "logger.h"
 
 // Function defined before importing Timelib, to avoid clashing with the dayOfWeek macro
 uint8_t get_day_of_week(uRTCLib *rtc) {
@@ -30,8 +31,6 @@ void RTC::setup() {
   rtc->set_rtc_address(0x68);
   setSyncProvider(syncProvider);
   setSyncInterval(2);
-//     rtc->set(0, 10, 20, 6, 10, 12, 10);
-
 }
 
 time_t RTC::get_time_t() {
@@ -45,19 +44,11 @@ time_t RTC::get_time_t() {
     rtc->month(),
     static_cast<uint8_t>(y2kYearToTm(rtc->year())),
   };
-  /*
-  Serial.print(rtc->day()); Serial.print("/");
-  Serial.print(rtc->month()); Serial.print("/");
-  Serial.print(rtc->year()); Serial.print(" ");
-  Serial.print(rtc->hour()); Serial.print(":");
-  Serial.print(rtc->minute()); Serial.print(":");
-  Serial.print(rtc->second()); Serial.print("\n");
-  */
   return makeTime(time);
 }
 
 void RTC::set_time(time_t time) {
-  Serial.print("Called set_time with "); Serial.println(time);
+  DEBUG() << F("Called set_time with ") << time;
   TimeElements time_elements;
   breakTime(time, time_elements);
   rtc->set(time_elements.Second, time_elements.Minute, time_elements.Hour, time_elements.Wday, time_elements.Day, time_elements.Month, tmYearToY2k(time_elements.Year));
