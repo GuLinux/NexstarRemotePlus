@@ -38,6 +38,7 @@ void Bluetooth::setup() {
   _port.end();
   // Start normal serial terminal
   _port.begin(9600);
+  _booted = true;
 }
 
 String Bluetooth::atCommand(const String &msg) {

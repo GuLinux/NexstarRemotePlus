@@ -3,7 +3,7 @@
 
 PCStream::PCStream() : Singleton<PCStream>(this) {}
 Stream &PCStream::current() {
-  if(connection() == USB)
+  if(connection() == USB || ! Bluetooth::instance()->booted())
     return Serial;
   return Bluetooth::instance()->port();
 }

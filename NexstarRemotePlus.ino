@@ -43,7 +43,6 @@ OSD osd;
 void setup() {
   Serial.begin(9600);
   logger.set_level(Logger::Debug);
-  delay(1000);
   DEBUG() << F("Starting setup sequence");
   pinMode(LED_BUILTIN, OUTPUT);
 

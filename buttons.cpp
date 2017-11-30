@@ -19,7 +19,7 @@ Buttons::Buttons() : Singleton<Buttons>(this) {
 
 void Buttons::setup(int pin) {
   DEBUG() << F("Using pin ") << pin << F(" for buttons handling");
-  pinMode(pin, INPUT);
+  pinMode(pin, INPUT_PULLDOWN);
   attachInterrupt(pin, buttonChanged, FALLING);
 }
 

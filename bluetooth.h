@@ -12,7 +12,9 @@ public:
   String atCommand(const String &msg);
   inline HardwareSerial &port() { return _port; }
   bool isConnected() const;
+  bool booted() const { return _booted; }
 private:
   HardwareSerial &_port;
+  bool _booted = false;
 };
 
