@@ -41,6 +41,7 @@ void Commands::read() {
       return;  
     if(_buffer_len > 2) {
       _buffer_len = 0;
+      memset(_buffer, 0, 3);
 
       handle(PCStream::instance()->readStringUntil('\n'));
       return;
