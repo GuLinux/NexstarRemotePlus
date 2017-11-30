@@ -44,7 +44,7 @@ String Bluetooth::atCommand(const String &msg) {
   DEBUG() << '>' << msg;
   _port.write(msg.c_str());
   _port.write("\r\n");
-  auto result = _port.readString();
+  auto result = _port.readStringUntil('\n');
   DEBUG() << '<' << result;
   return result;
 }

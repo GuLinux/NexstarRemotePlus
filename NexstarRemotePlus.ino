@@ -19,14 +19,14 @@
 
 // Wiring: green -> TX, blue -> RX
 
+PCStream pc_stream;
+Logger logger(pc_stream);
 
 
 Battery battery;
 RTC rtc;
 Display display;
 Settings settings;
-PCStream pc_stream;
-Logger logger(pc_stream);
 Bluetooth bluetooth{Serial2}; // RX, TX
 Nexstar nexstar{Serial1};
 
@@ -41,8 +41,12 @@ OSD osd;
 
 
 void setup() {
-  pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(9600);
+  logger.set_level(Logger::Debug);
+  delay(1000);
+  DEBUG() << F("Starting setup sequence");
+  pinMode(LED_BUILTIN, OUTPUT);
+
   settings.load();
   bluetooth.setup();
   buttons.setup(BUTTON_PIN);
@@ -62,6 +66,7 @@ void setup() {
   processor.setup();
   digitalWrite(LED_BUILTIN, HIGH);
   Serial.setTimeout(2000);
+  DEBUG() << F("Setup finished");
 }
 
 void loop() {

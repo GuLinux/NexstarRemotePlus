@@ -20,10 +20,12 @@ template<typename T> uint16_t *get_buffer(T &t) {
 
 void Settings::load() {
 #ifdef RTC_WITH_EEPROM
+  DEBUG() << F("Loading settings from EEPROM");
   uint8_t *buffer = reinterpret_cast<uint8_t*>(&data); 
   for(uint16_t i=0; i < sizeof(Data); i++)
     buffer[i] = RTC::instance()->read_ee(i);
 #else
+  DEBUG() << F("Loading settings from flash");
   auto data_eeprom = get_buffer(data);
   for(uint16_t i=0; i<struct_size<Data>(); i++) {
     data_eeprom[i] = EEPROM.read(i);
@@ -38,6 +40,7 @@ void Settings::load() {
     data.daylight_saving = 0;
     data.gps_timeout = 5 * 60;
   }
+  DEBUG() << F("Settings loaded");
 }
 
 void Settings::save() {

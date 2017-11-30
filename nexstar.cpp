@@ -1,6 +1,7 @@
 #include "nexstar.h"
 #include "settings.h"
 #include "TimeLib.h"
+#include "logger.h"
 Nexstar::Nexstar(HardwareSerial &port) : Singleton<Nexstar>(this), _port(port)
 {
 }
@@ -14,6 +15,7 @@ void Nexstar::read_to(Stream &stream) {
 }
 
 void Nexstar::setup() {
+  DEBUG() << F("Opening Nexstar serial port");
   _port.begin(9600);
 }
 

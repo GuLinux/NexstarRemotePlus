@@ -13,6 +13,7 @@ GPS::GPS(HardwareSerial &port) : Singleton(this), _port(port)
 void debug_gps_info(TinyGPSPlus &gps);
 
 void GPS::sleep() {
+  DEBUG() << F("Suspending GPS");
   static const char sleepMessage[] = {0xB5, 0x62, 0x02, 0x41, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x4D, 0x3B};
   for (uint8_t i = 0; i < sizeof(sleepMessage); i++)
     _port.write(sleepMessage[i]);
@@ -21,6 +22,7 @@ void GPS::sleep() {
 }
 
 void GPS::resume() {
+  DEBUG() << F("Resuming GPS");
   delay(500);
   for (int i = 0; i < 10; i++)
     _port.write("\xFF");
@@ -29,6 +31,7 @@ void GPS::resume() {
 }
 
 void GPS::open() {
+  DEBUG() << F("Opening GPS port");
   _port.begin(9600);
 }
 
@@ -39,7 +42,7 @@ void GPS::close() {
 void GPS::process() {
   while (_port.available()) {
     auto c = _port.read();
-    TRACE().no_newline() << c;
+    TRACE().no_newline().write(c);
     if(gps.encode(c)) {
       debug_gps_info(gps);
     }
@@ -88,40 +91,40 @@ void GPS::syncDateTime() {
 
 void debug_gps_info(TinyGPSPlus &gps)
 {
-  auto dbg = DEBUG();
-  dbg << F("Location: ");
+  DEBUG().no_newline() << F("Location: ");
   if (gps.location.isValid())
   {
-    dbg << gps.location.lat() << F(", ") << gps.location.lng();
+    DEBUG().no_newline() << gps.location.lat() << F(", ") << gps.location.lng();
   }
   else
   {
-    dbg << F("INVALID");
+    DEBUG().no_newline() << F("INVALID");
   }
 
-  dbg << F(", date: ");
+  DEBUG().no_newline() << F(", date: ");
   if (gps.date.isValid())
   {
     char date[11];
     sprintf(date, "%02d/%02d/%04d", gps.date.day(), gps.date.month(), gps.date.year());
-    dbg << date;
+    DEBUG().no_newline() << date;
   }
   else
   {
-    dbg << F("INVALID");
+    DEBUG().no_newline() << F("INVALID");
   }
 
-  dbg << F(", time: ");
+  DEBUG().no_newline() << F(", time: ");
   if (gps.time.isValid())
   {
     char time[12];
     sprintf(time, "%02d:%02d:%02d.%02d", gps.time.hour(), gps.time.minute(), gps.time.second(), gps.time.centisecond());
-    dbg << time;
+    DEBUG().no_newline() << time;
   }
   else
   {
-    dbg << F("INVALID");
+    DEBUG().no_newline() << F("INVALID");
   }
-  dbg << F("; satellites: ") << gps.satellites.value();
+  DEBUG().no_newline() << F("; satellites: ") << gps.satellites.value();
+  DEBUG().no_newline().write('\r').write('\n');
 }
 

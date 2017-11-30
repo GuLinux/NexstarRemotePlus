@@ -1,4 +1,5 @@
 #include "buttons.h"
+#include "logger.h"
 
 #define TIMEOUT 500
 
@@ -17,6 +18,7 @@ Buttons::Buttons() : Singleton<Buttons>(this) {
 }
 
 void Buttons::setup(int pin) {
+  DEBUG() << F("Using pin ") << pin << F(" for buttons handling");
   pinMode(pin, INPUT);
   attachInterrupt(pin, buttonChanged, FALLING);
 }

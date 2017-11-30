@@ -1,4 +1,5 @@
 #include "battery.h"
+#include "logger.h"
 
 // Voltmeter: AnalogPin 10, R1=7440, R2=8180
 
@@ -15,6 +16,7 @@ Battery::Battery() : Singleton<Battery>(this) {
 }
 
 void Battery::setup() {
+  DEBUG() << F("Using pin ") << BATTERY_PIN << F(" as battery meter");
   pinMode(BATTERY_PIN, INPUT_ANALOG);
 }
 

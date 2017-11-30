@@ -28,6 +28,7 @@ RTC::~RTC() {
 
 
 void RTC::setup() {
+  DEBUG() << F("Setting up RTC time provider");
   rtc->set_rtc_address(0x68);
   setSyncProvider(syncProvider);
   setSyncInterval(2);
