@@ -63,7 +63,7 @@ void Commands::handle(const String &command) {
   )
     return;
 
-  ERROR() << F("Unrecognized command: ") << parsed.name << '#';
+  ERROR() << F("Unrecognized command: ") << parsed.name;
   ERROR() << F("Available commands: PING, GPSWAKE, LOGLEVEL[=level], BTNAME[=name], BTPIN[=pin],TZINFO[=tz,dst]");
 }
 
