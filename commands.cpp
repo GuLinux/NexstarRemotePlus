@@ -42,7 +42,7 @@ void Commands::read() {
     if(_buffer_len > 2) {
       _buffer_len = 0;
       memset(_buffer, 0, 3);
-
+      PCStream::instance()->setTimeout(10000);
       handle(PCStream::instance()->readStringUntil('\n'));
       return;
     }
@@ -68,7 +68,7 @@ void Commands::handle(const String &command) {
 }
 
 void Commands::bluetooth_settings_changed() {
-  WARNING() << F("Bluetooth settings will be applied at next reboot");
+  Bluetooth::instance()->reload_settings();
 }
 
 void Commands::bluetooth_name(const Command &command) {
@@ -114,6 +114,7 @@ void Commands::log_level(const Command &command) {
       return;
     }
     Logger::instance()->set_level(static_cast<Logger::Level>(level));
+    Settings::instance()->log_level(Logger::instance()->level());
   }
   INFO() << Command::OK << Logger::instance()->level();
 }

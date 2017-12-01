@@ -13,6 +13,7 @@ public:
   inline HardwareSerial &port() { return _port; }
   bool isConnected() const;
   bool booted() const { return _booted; }
+  void reload_settings();
 private:
   HardwareSerial &_port;
   bool _booted = false;

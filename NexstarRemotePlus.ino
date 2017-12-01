@@ -42,14 +42,16 @@ OSD osd;
 
 void setup() {
   Serial.begin(9600);
-  logger.set_level(Logger::Debug);
+  rtc.setup();
+  settings.load();
+  logger.set_level(static_cast<Logger::Level>(settings.log_level()));
   DEBUG() << F("Starting setup sequence");
   pinMode(LED_BUILTIN, OUTPUT);
 
-  settings.load();
+
   bluetooth.setup();
   buttons.setup(BUTTON_PIN);
-  rtc.setup();
+
   display.begin();
   DEBUG() << F("Starting up NexStarRemote+");
   battery.setup();

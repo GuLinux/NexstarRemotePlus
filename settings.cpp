@@ -1,8 +1,9 @@
 #include "settings.h"
 #include <EEPROM.h>
 #include "logger.h"
+#include "rtc.h"
 
-static const char *default_version = "v1.0.1";
+static const char *default_version = "v1.0.4";
 
 Settings::Settings(): Singleton<Settings>(this) {
 #ifndef RTC_WITH_EEPROM
@@ -39,6 +40,7 @@ void Settings::load() {
     data.timezone = 0;
     data.daylight_saving = 0;
     data.gps_timeout = 5 * 60;
+    data.log_level = Logger::Info;
   }
   DEBUG() << F("Settings loaded");
 }

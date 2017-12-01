@@ -9,16 +9,35 @@
 Bluetooth::Bluetooth(HardwareSerial &port) : Singleton<Bluetooth>(this), _port(port) {}
 
 void Bluetooth::setup() {
-  _port.setTimeout(2000);
   // Set pin modes
   pinMode(STATE_PIN, INPUT);
   pinMode(KEY_PIN, OUTPUT);
   pinMode(EN_PIN, OUTPUT);
+  reload_settings();
+}
+
+String Bluetooth::atCommand(const String &msg) {
+  DEBUG() << '>' << msg;
+  _port.write(msg.c_str());
+  _port.write("\r\n");
+  auto result = _port.readStringUntil('\n');
+  DEBUG() << '<' << result;
+  return result;
+}
+
+bool Bluetooth::isConnected() const {
+  return digitalRead(STATE_PIN) == HIGH;
+}
+
+void Bluetooth::reload_settings() {
+  _booted = false;
+  _port.end();
+  _port.setTimeout(200);
   // Turn off bluetooth
   digitalWrite(EN_PIN, LOW);
   // Set AT mode
   digitalWrite(KEY_PIN, HIGH);
-  delay(200);
+  delay(100);
   // Turn on bluetooth again
   digitalWrite(EN_PIN, HIGH);
   _port.begin(38400);
@@ -41,15 +60,3 @@ void Bluetooth::setup() {
   _booted = true;
 }
 
-String Bluetooth::atCommand(const String &msg) {
-  DEBUG() << '>' << msg;
-  _port.write(msg.c_str());
-  _port.write("\r\n");
-  auto result = _port.readStringUntil('\n');
-  DEBUG() << '<' << result;
-  return result;
-}
-
-bool Bluetooth::isConnected() const {
-  return digitalRead(STATE_PIN) == HIGH;
-}

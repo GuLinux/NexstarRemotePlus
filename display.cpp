@@ -7,6 +7,11 @@
 #include "battery.h"
 #include "pc_stream.h"
 
+#if (SSD1306_LCDHEIGHT != 64)
+#error("Height incorrect, please fix Adafruit_SSD1306.h!");
+#endif
+
+
 #define DRAW_ICON_BORDER 0
 #define ICON_TOP 0
 

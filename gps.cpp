@@ -6,6 +6,10 @@
 #include "pc_stream.h"
 #include "logger.h"
 
+namespace {
+  static const char sleepMessage[] = {0xB5, 0x62, 0x02, 0x41, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x4D, 0x3B};
+}
+
 GPS::GPS(HardwareSerial &port) : Singleton(this), _port(port)
 {
 }
@@ -14,7 +18,6 @@ void debug_gps_info(TinyGPSPlus &gps);
 
 void GPS::sleep() {
   DEBUG() << F("Suspending GPS");
-  static const char sleepMessage[] = {0xB5, 0x62, 0x02, 0x41, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x4D, 0x3B};
   for (uint8_t i = 0; i < sizeof(sleepMessage); i++)
     _port.write(sleepMessage[i]);
   delay(1000);

@@ -38,7 +38,7 @@ public:
   Level level() const { return _level; }
 private:
   Print &s;
-  Level _level = Info;
+  Level _level = Trace;
 };
 
 
