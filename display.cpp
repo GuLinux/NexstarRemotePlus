@@ -63,8 +63,11 @@ void Display::update() {
   oled.print(datetime);
   osd_canvas.setCursor(0,0);
   osd_canvas.fillScreen(BLACK);
-  OSD::instance()->render(osd_canvas);
-  oled.drawBitmap(0, 0, osd_canvas.getBuffer(), osd_canvas.width(), osd_canvas.height(), WHITE);
+  if(OSD::instance()->render(osd_canvas)) {
+    oled.drawBitmap(0, 0, osd_canvas.getBuffer(), osd_canvas.width(), osd_canvas.height(), WHITE);
+    oled.display();
+    return;
+  }
   if(PCStream::instance()->connection() == PCStream::USB) {
     oled.drawBitmap(ICONS_X, ICON_Y(0), icon_usb, ICONS_SIZE, ICONS_SIZE, WHITE);
   } else {

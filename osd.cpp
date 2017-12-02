@@ -64,7 +64,7 @@ void OSD::tick() {
     message = String();
 }
 
-void OSD::render(Print &print) {
+bool OSD::render(Print &print) {
 /*
   static uint8_t last_menu = 0;
   if(last_menu != _menu_index) {
@@ -75,8 +75,14 @@ void OSD::render(Print &print) {
 */
   if(message.length() > 0) {
     print.println(message);
+    return true;
+  }
+
+  if(_menu_index == 0) {
+    return false;
   }
   print.print(menu_entry().label);
+  return true;
 }
 
 void OSD::on_click() {

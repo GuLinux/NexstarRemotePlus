@@ -9,7 +9,7 @@ public:
   OSD();
   void show_message(const String &message, int seconds=10);
   void tick();
-  void render(Print &print);
+  bool render(Print &print);
   void on_click();
   void on_double_click();
   void on_triple_click();
