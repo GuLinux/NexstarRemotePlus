@@ -15,8 +15,9 @@ Logger::Log &Logger::Log::no_newline() {
 }
 
 Logger::Log::~Log() {
-  if(enabled && newline && --usages == 0) {
-    s.println();
+  usages--;
+  if(enabled && newline && usages == 1) {
+    s.println('\r');
   }
 }
 

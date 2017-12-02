@@ -1,0 +1,28 @@
+BUILD_DIR := $(PWD)/.build/target
+CACHE_DIR := $(PWD)/.build/cache
+
+all: build upload usb
+	
+
+menu.h: menu_creator.py
+	python3 menu_creator.py
+
+build_dir:
+	mkdir -p $(BUILD_DIR) $(CACHE_DIR)
+
+icons/icons.h: icons/*.png
+	./icons/generate_icons.sh
+
+build: build_dir *.cpp *.h *.ino icons/icons.h menu.h
+	$(ARDUINO_BUILDER) -compile -logger=human $(HARDWARE_FLAGS) $(TOOLS_FLAGS) $(LIBRARIES_FLAGS) -fqbn=Arduino_STM32:STM32F1:mapleMini:bootloader_version=original,cpu_speed=speed_72mhz,opt=osstd -vid-pid=0X1EAF_0X0004 -ide-version=10805 -build-path $(BUILD_DIR) -warnings=default -build-cache $(CACHE_DIR) -prefs=build.warn_data_percentage=75 *.ino
+
+upload: build
+	$(ARDUINO_HOME)/hardware/Arduino_STM32/tools/$(STM32_OS_DIR)/maple_upload $(USB_PORT) 1 1EAF:0003 $(BUILD_DIR)/*.ino.bin 
+
+clean:
+	rm -rf $(BUILD_DIR) $(CACHE_DIR)
+
+usb:
+	picocom -c /dev/$(USB_PORT) --omap crcrlf 
+
+# vim: noexpandtab:

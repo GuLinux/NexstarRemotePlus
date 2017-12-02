@@ -1,0 +1,50 @@
+#!/bin/bash
+
+DEFAULT_USB_PORT=ttyACM0
+
+# TODO: windows support (maybe)
+OS=$( uname )
+if [[ "$OS" == "Linux" ]]; then
+  ARDUINO_PATH=/usr/share/arduino
+  ARDUINO_HOME="$HOME/Arduino"
+  STM32_OS_DIR=linux64
+elif [[ "$OS" == "Darwin" ]]; then
+	ARDUINO_PATH="/Applications/Arduino.app/Contents/Java"
+	ARDUINO_HOME="$HOME/Documents/Arduino"
+  STM32_OS_DIR=macosx
+fi
+
+check_path() {
+  flag_name="$1"
+  path="$2"
+  if [[ -d "$path" ]]; then
+    echo "-$flag_name $path"
+  fi
+}
+
+HARDWARE_FLAGS="$( check_path hardware "$ARDUINO_PATH/hardware") $( check_path hardware "$ARDUINO_HOME/.arduino15/packages")"
+HARDWARE_FLAGS="$HARDWARE_FLAGS $( check_path hardware "$ARDUINO_HOME/hardware") $( check_path hardware "$HOME/.arduino15")"
+
+LIBRARIES_FLAGS="$( check_path libraries "$ARDUINO_HOME/libraries" )"
+TOOLS_FLAGS="$( check_path tools "$ARDUINO_PATH/tools-builder") $( check_path tools "$HOME/.arduino15/packages" )"
+
+if [[ "$OS" == "Darwin" ]]; then
+  HARDWARE_FLAGS="$HARDWARE_FLAGS $( check_path hardware "$HOME/Library/Arduino15/packages" )"
+	TOOLS_FLAGS="$TOOLS_FLAGS $( check_path tools "$HOME/Library/Arduino15/packages")"
+fi
+
+
+cat >Makefile <<EOF
+USB_PORT ?= ${DEFAULT_USB_PORT}
+ARDUINO_PATH := $ARDUINO_PATH
+ARDUINO_HOME := $ARDUINO_HOME
+
+ARDUINO_BUILDER := \$(ARDUINO_PATH)/arduino-builder
+HARDWARE_FLAGS := $HARDWARE_FLAGS
+LIBRARIES_FLAGS := $LIBRARIES_FLAGS
+TOOLS_FLAGS := $TOOLS_FLAGS
+STM32_OS_DIR := $STM32_OS_DIR
+EOF
+
+cat Makefile.in >> Makefile
+
