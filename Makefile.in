@@ -4,8 +4,8 @@ CACHE_DIR := $(PWD)/.build/cache
 all: build upload usb
 	
 
-menu.h: menu_creator.py
-	python3 menu_creator.py
+menu.h: menu_creator.py menu.json
+	python3 menu_creator.py menu.json > menu.h
 
 build_dir:
 	mkdir -p $(BUILD_DIR) $(CACHE_DIR)

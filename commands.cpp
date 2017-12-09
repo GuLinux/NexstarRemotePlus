@@ -58,13 +58,12 @@ void Commands::handle(const String &command) {
       parsed.handle("LOGLEVEL", [this](const Command &c) { log_level(c); }) ||
       parsed.handle("BTNAME", [this](const Command &c) { bluetooth_name(c); }) ||
       parsed.handle("BTPIN", [this](const Command &c) { bluetooth_pin(c); }) ||
-      parsed.handle("TZINFO", [this](const Command &c) { change_tz(c); }) ||
       parsed.handle("TIME", [this](const Command &c) { time(c); })
   )
     return;
 
   ERROR() << F("Unrecognized command: ") << parsed.name;
-  ERROR() << F("Available commands: PING, GPSWAKE, LOGLEVEL[=level], BTNAME[=name], BTPIN[=pin],TZINFO[=tz,dst]");
+  ERROR() << F("Available commands: PING, GPSWAKE, LOGLEVEL[=level], BTNAME[=name], BTPIN[=pin]");
 }
 
 void Commands::bluetooth_settings_changed() {
@@ -81,19 +80,11 @@ void Commands::bluetooth_name(const Command &command) {
 
 void Commands::bluetooth_pin(const Command &command) {
   if(command.params[0].length() > 0) {
+    DEBUG() << "Setting pin to " << command.params[0].c_str();
     Settings::instance()->bluetooth_pin(command.params[0].c_str());
     bluetooth_settings_changed();
   }
   INFO() << Command::OK << Settings::instance()->bluetooth_pin();
-}
-
-void Commands::change_tz(const Command &command) {
-  if(command.params[0].length() > 0) {
-    Settings::instance()->timezone(atoi(command.params[0].c_str()));
-    Settings::instance()->daylight_saving(atoi(command.params[1].c_str()));
-  }
-  INFO() << Command::OK << F(",tz=") << LOG_I(Settings::instance()->timezone()) << F(",dst=") << LOG_I(Settings::instance()->daylight_saving());
-  
 }
 
 void Commands::wake_gps(const Command &command) {
@@ -102,7 +93,6 @@ void Commands::wake_gps(const Command &command) {
 }
 
 void Commands::time(const Command &command) {
-  tmElements_t datetime;
   INFO() << Command::OK << year() << month() << day() << 'T' <<hour() << ':' << minute() << ':' << second();
 }
 

@@ -9,7 +9,7 @@ class Bluetooth : public Singleton<Bluetooth> {
 public:
   Bluetooth(HardwareSerial &port);
   void setup();
-  String atCommand(const String &msg);
+  String atCommand(const char *msg);
   inline HardwareSerial &port() { return _port; }
   bool isConnected() const;
   bool booted() const { return _booted; }

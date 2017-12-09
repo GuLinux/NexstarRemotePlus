@@ -1,6 +1,7 @@
 #include "rtc.h"
 #include <uRTCLib.h>
 #include "logger.h"
+#include "settings.h"
 
 // Function defined before importing Timelib, to avoid clashing with the dayOfWeek macro
 uint8_t get_day_of_week(uRTCLib *rtc) {
@@ -12,8 +13,9 @@ uint8_t get_day_of_week(uRTCLib *rtc) {
 
 namespace {
   time_t syncProvider() {
-    if(RTC::instance())
-      return RTC::instance()->get_time_t();
+    if(RTC::instance()) {
+      return RTC::instance()->localtime();
+    }
     return 0;
   }
 }
@@ -28,14 +30,14 @@ RTC::~RTC() {
 
 
 void RTC::setup() {
-  DEBUG() << F("Setting up RTC time provider");
+  TRACE() << F("Setting up RTC time provider");
   rtc->set_rtc_address(0x68);
   rtc->set_ee_address(0x50);
   setSyncProvider(syncProvider);
   setSyncInterval(2);
 }
 
-time_t RTC::get_time_t() {
+time_t RTC::utc() {
   rtc->refresh();
   TimeElements time{
     rtc->second(),
@@ -49,8 +51,12 @@ time_t RTC::get_time_t() {
   return makeTime(time);
 }
 
+time_t RTC::localtime() {
+  return utc() + (Settings::instance()->timezone().value + Settings::instance()->daylight_saving().value) * 3600;
+}
+
 void RTC::set_time(time_t time) {
-  DEBUG() << F("Called set_time with ") << time;
+  TRACE() << F("Called set_time with ") << time;
   TimeElements time_elements;
   breakTime(time, time_elements);
   rtc->set(time_elements.Second, time_elements.Minute, time_elements.Hour, time_elements.Wday, time_elements.Day, time_elements.Month, tmYearToY2k(time_elements.Year));

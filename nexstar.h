@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "singleton.h"
+#include "gps.h"
 #pragma once
 
 class Settings;
@@ -9,9 +10,13 @@ public:
   inline HardwareSerial &port() { return _port; }
   void read_to(Stream &stream);
   void setup();
-  void set_time();
-  void set_gps_info(double latitude, double longitude);
+  bool set_time();
+  bool set_gps_info();
+  bool ping();
 private:
+  bool check_connection();
+  String get_reply();
   HardwareSerial &_port;
+  GPS::Fix last_fix;
 };
 

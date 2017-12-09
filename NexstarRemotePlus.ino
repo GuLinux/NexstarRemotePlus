@@ -12,7 +12,6 @@
 #include "buttons.h"
 #include "battery.h"
 
-#include <TimeLib.h>
 #include "logger.h"
 //#define BUTTON_PIN 3
 #define BUTTON_PIN 32

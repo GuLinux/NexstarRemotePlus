@@ -1,67 +1,54 @@
 #include "settings.h"
-#include <EEPROM.h>
 #include "logger.h"
 #include "rtc.h"
+#include "menu.h"
 
-static const char *default_version = "v1.0.4";
+static const char *default_version = "v1.0.7";
 
 Settings::Settings(): Singleton<Settings>(this) {
-#ifndef RTC_WITH_EEPROM
-  EEPROM.init();
-#endif
 }
 
-template<typename T> uint16_t struct_size() {
-  return (sizeof(T) + (sizeof(T)%2))/2;
-}
-
-template<typename T> uint16_t *get_buffer(T &t) {
-  return reinterpret_cast<uint16_t*>(&t);
-}
 
 void Settings::load() {
-#ifdef RTC_WITH_EEPROM
-  DEBUG() << F("Loading settings from EEPROM");
+  delay(100);
+  TRACE() << F("Loading settings from EEPROM");
   uint8_t *buffer = reinterpret_cast<uint8_t*>(&data); 
   for(uint16_t i=0; i < sizeof(Data); i++)
     buffer[i] = RTC::instance()->read_ee(i);
-#else
-  DEBUG() << F("Loading settings from flash");
-  auto data_eeprom = get_buffer(data);
-  for(uint16_t i=0; i<struct_size<Data>(); i++) {
-    data_eeprom[i] = EEPROM.read(i);
-  }
-#endif
-  if(String(data.version) != default_version) {
+  if(strcmp(data.version, default_version) != 0) {
     DEBUG() << F("Settings empty, loading defaults");
     strcpy(data.version, default_version);
     strcpy(data.bluetooth_pin, "0000");
     strcpy(data.bluetooth_name, "NexstarBT");
-    data.timezone = 0;
-    data.daylight_saving = 0;
-    data.gps_timeout = 5 * 60;
+    data.timezone = {0, MENU_SET_TIMEZONE_GMT_P00};
+    data.daylight_saving = {0, MENU_SET_DAYLIGHT_SAVING_OFF};
+    data.gps_timeout = {0, MENU_GPS_TIMEOUT_INFINITE};
     data.log_level = Logger::Info;
   }
-  DEBUG() << F("Settings loaded");
+  TRACE() << F("Settings loaded");
 }
 
 void Settings::save() {
-#ifdef RTC_WITH_EEPROM
   uint8_t *buffer = reinterpret_cast<uint8_t*>(&data); 
   for(uint16_t i=0; i < sizeof(Data); i++)
     RTC::instance()->update_ee(i, buffer[i]);
-#else
-  auto data_eeprom = get_buffer(data);
-  for(uint16_t i=0; i<struct_size<Data>(); i++) {
-    EEPROM.update(i, data_eeprom[i]);
-  }
-#endif
+  delay(100);
   load();
 }
 
+void Settings::bluetooth_pin(const char *pin) {
+  strncpy(data.bluetooth_pin, pin, BT_PIN_SIZE);
+  save();
+}
+
+void Settings::bluetooth_name(const char *name) {
+  strncpy(data.bluetooth_name, name, BT_NAME_SIZE);
+  save();
+}
 
 void Settings::set_string(char *dest, const char *msg, int field_size) {
-  memset(dest, 0, field_size);
-  strcpy(dest, msg);
+  strncpy(dest, msg, field_size);
+  dest[field_size] = 0;
+  DEBUG() << "got string: " << msg << ", dest: " << dest << ", field_size: " << field_size;
 }
 

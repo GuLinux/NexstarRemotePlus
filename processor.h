@@ -1,6 +1,9 @@
 #include "Arduino.h"
 #include "singleton.h"
+#include "gps.h"
 #pragma once
+
+#define GPS_FIXES_AVERAGE_COUNT 20
 
 class Nexstar;
 class Settings;
@@ -19,6 +22,7 @@ public:
   void setup();
 private:
   void gps_power_management();
+  void gps_fix_management();
 
   void nexstar_sync();
   void check_connection();
@@ -27,5 +31,8 @@ private:
   bool _sync_nexstar = false;
   uint8_t _button_pressed = 0;
   uint32_t _gps_expire = 0;
+  GPS::Fix last_fixes[GPS_FIXES_AVERAGE_COUNT];
+  uint8_t last_fixes_cnt = 0;
+  uint32_t _gps_last_fix = 0;
 };
 

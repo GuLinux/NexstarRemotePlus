@@ -7,9 +7,33 @@
 
 namespace {
   void set_gps_timeout(uint32_t minutes) {
-    Settings::instance()->gps_timeout(60 * minutes);
-    if(minutes > 0) {
-      OSD::instance()->show_message(String("GPS Timeout set to ") + minutes + " minutes");
+    Settings::MenuSetting<uint16_t> setting;
+    switch(minutes) {
+      case 5:
+        setting.value = 5 * 60;
+        setting.uid = MENU_GPS_TIMEOUT_5M;
+        break;
+      case 10:
+        setting.value = 10 * 60;
+        setting.uid = MENU_GPS_TIMEOUT_10M;
+        break;
+      case 20:
+        setting.value = 2 * 60;
+        setting.uid = MENU_GPS_TIMEOUT_20M;
+        break;
+      case 40:
+        setting.value = 4 * 60;
+        setting.uid = MENU_GPS_TIMEOUT_40M;
+        break;
+      default:
+        setting.value = 0;
+        setting.uid = MENU_GPS_TIMEOUT_INFINITE;
+        break;
+
+    }
+    Settings::instance()->gps_timeout(setting);
+    if(setting.value> 0) {
+      OSD::instance()->show_message(String("GPS Timeout set to ") + setting.value/60 + " minutes");
     } else {
       OSD::instance()->show_message(String("GPS set to no timeout "));
     }
@@ -18,16 +42,23 @@ namespace {
 
   // We assume that GMT action codes are contiguous
   void set_timezone(uint8_t code) {
-    int16_t delta = code - ACTION_SET_TIMEZONE_GMT_P00;
+    int8_t delta = static_cast<uint8_t>(code) - static_cast<uint8_t>(ACTION_SET_TIMEZONE_GMT_P00);
+    DEBUG() << "Got code: " << code << ", delta: " << delta << ", P00=" << ACTION_SET_TIMEZONE_GMT_P00;
     char message[23];
     uint8_t sign = (delta >= 0 ? '+' : '-');
     sprintf(message, "Timezone set to GMT%c%02d", sign, delta);
     OSD::instance()->show_message(message);
-    Settings::instance()->timezone(delta);
+    uint8_t menu_uid = MENU_SET_TIMEZONE_GMT_P00 + delta;
+    Settings::instance()->timezone({delta, menu_uid});
   }
 
   void set_daylight_saving(bool on) {
-    Settings::instance()->daylight_saving(on ? 1 : 0);
+    Settings::MenuSetting<int8_t> dst {0, MENU_SET_DAYLIGHT_SAVING_OFF};
+    if(on) {
+      dst.value = 1;
+      dst.uid = MENU_SET_DAYLIGHT_SAVING_ON;
+    }
+    Settings::instance()->daylight_saving(dst);
     String message("Daylight saving: ");
     message += on ? "ON" : "OFF";
     OSD::instance()->show_message(message);
@@ -44,6 +75,11 @@ namespace {
   void on_triple_click() {
     OSD::instance()->on_triple_click();
   }
+
+  void on_long_click() {
+    OSD::instance()->on_long_click();
+  }
+
 }
 
 
@@ -52,6 +88,7 @@ OSD::OSD() : Singleton<OSD>(this) {
   Buttons::instance()->set_callback(::on_click, Buttons::SingleClick);
   Buttons::instance()->set_callback(::on_double_click, Buttons::DoubleClick);
   Buttons::instance()->set_callback(::on_triple_click, Buttons::TripleClick);
+  Buttons::instance()->set_callback(::on_long_click, Buttons::LongClick);
 }
 
 void OSD::show_message(const String &message, int seconds) {
@@ -64,29 +101,26 @@ void OSD::tick() {
     message = String();
 }
 
-bool OSD::render(Print &print) {
-/*
-  static uint8_t last_menu = 0;
-  if(last_menu != _menu_index) {
-    Serial.print("Rendering menu: "); Serial.print(_menu_index); Serial.print(", `"); Serial.print(menu_entry().label); Serial.print("`, on_click=");
-    Serial.print(menu_entry().on_click); Serial.print(", on_double_click="); Serial.println(menu_entry().on_double_click);
-    last_menu = _menu_index;
-  }
-*/
+String OSD::render() {
   if(message.length() > 0) {
-    print.println(message);
-    return true;
+    return message;
   }
-
-  if(_menu_index == 0) {
-    return false;
-  }
-  print.print(menu_entry().label);
-  return true;
+  auto entry = menu_entry();
+  String label = entry.label;
+  if( (entry.parent == MENU_GPS_TIMEOUT && Settings::instance()->gps_timeout().uid == entry.id) ||
+      (entry.parent == MENU_SET_DAYLIGHT_SAVING && Settings::instance()->daylight_saving().uid == entry.id) ||
+      (entry.parent == MENU_SET_TIMEZONE && Settings::instance()->timezone().uid == entry.id) )
+    label += " *";
+  return label;
 }
 
 void OSD::on_click() {
-  _menu_index = menu_entry().on_click;
+  _menu_index = menu_entry().on_next;
+  clear_message();
+}
+
+void OSD::on_triple_click() {
+  _menu_index = menu_entry().on_back;
   clear_message();
 }
 
@@ -94,15 +128,21 @@ void OSD::on_double_click() {
   clear_message();
   auto entry = menu_entry();
   _menu_index = 0;
-  uint8_t code = entry.on_double_click;
+  uint8_t code = entry.on_enter;
   if(code >= ACTIONS_BASE) {
     action(code);
   } else {
+    if(entry.id == MENU_GPS_TIMEOUT)
+      code = Settings::instance()->gps_timeout().uid;
+    if(entry.id == MENU_SET_DAYLIGHT_SAVING)
+      code = Settings::instance()->daylight_saving().uid;
+    if(entry.id == MENU_SET_TIMEZONE)
+      code = Settings::instance()->timezone().uid;
     _menu_index = code;
   }
 }
 
-void OSD::on_triple_click() {
+void OSD::on_long_click() {
   _menu_index = 0;
   clear_message();
 }

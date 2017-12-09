@@ -16,9 +16,9 @@ void Bluetooth::setup() {
   reload_settings();
 }
 
-String Bluetooth::atCommand(const String &msg) {
+String Bluetooth::atCommand(const char *msg) {
   DEBUG() << '>' << msg;
-  _port.write(msg.c_str());
+  _port.write(msg);
   _port.write("\r\n");
   auto result = _port.readStringUntil('\n');
   DEBUG() << '<' << result;
@@ -30,6 +30,7 @@ bool Bluetooth::isConnected() const {
 }
 
 void Bluetooth::reload_settings() {
+  char buffer[BT_NAME_SIZE + 12]{0};
   _booted = false;
   _port.end();
   _port.setTimeout(200);
@@ -45,8 +46,10 @@ void Bluetooth::reload_settings() {
   DEBUG() << F("--- Bluetooth command mode ---");
   while(! atCommand("AT").startsWith("OK"))
     delay(100);
-  atCommand(String("AT+NAME=") + Settings::instance()->bluetooth_name());
-  atCommand(String("AT+PSWD=\"") + Settings::instance()->bluetooth_pin() + "\"");
+  sprintf(buffer, "AT+NAME=%s", Settings::instance()->bluetooth_name());
+  atCommand(buffer);
+  sprintf(buffer, "AT+PSWD=\"%s\"", Settings::instance()->bluetooth_pin());
+  atCommand(buffer);
   atCommand("AT+NAME?");
   atCommand("AT+PSWD?");
   atCommand("AT+VERSION?");

@@ -47,9 +47,18 @@ void GPS::process() {
     auto c = _port.read();
     TRACE().no_newline().write(c);
     if(gps.encode(c)) {
-      debug_gps_info(gps);
+      syncDateTime();
     }
   }
+}
+
+GPS::Fix GPS::get_fix() {
+  if(! has_fix())
+    return {}; 
+  return {
+    gps.location.lat(),
+    gps.location.lng()
+  };
 }
 
 void GPS::send_nmea(const String &command) {
@@ -83,7 +92,6 @@ void GPS::syncDateTime() {
     static_cast<uint8_t>(gps.date.year() - 1970),
   };
   time_t t = makeTime(datetime);
-  Serial.print("UNIX time: "); Serial.println(t);
   /*
   //Serial.print("UNIX time: "); Serial.println(t);
   RTC.set(t);
@@ -92,42 +100,4 @@ void GPS::syncDateTime() {
   RTC::instance()->set_time(t);
 }
 
-void debug_gps_info(TinyGPSPlus &gps)
-{
-  DEBUG().no_newline() << F("Location: ");
-  if (gps.location.isValid())
-  {
-    DEBUG().no_newline() << gps.location.lat() << F(", ") << gps.location.lng();
-  }
-  else
-  {
-    DEBUG().no_newline() << F("INVALID");
-  }
-
-  DEBUG().no_newline() << F(", date: ");
-  if (gps.date.isValid())
-  {
-    char date[11];
-    sprintf(date, "%02d/%02d/%04d", gps.date.day(), gps.date.month(), gps.date.year());
-    DEBUG().no_newline() << date;
-  }
-  else
-  {
-    DEBUG().no_newline() << F("INVALID");
-  }
-
-  DEBUG().no_newline() << F(", time: ");
-  if (gps.time.isValid())
-  {
-    char time[12];
-    sprintf(time, "%02d:%02d:%02d.%02d", gps.time.hour(), gps.time.minute(), gps.time.second(), gps.time.centisecond());
-    DEBUG().no_newline() << time;
-  }
-  else
-  {
-    DEBUG().no_newline() << F("INVALID");
-  }
-  DEBUG().no_newline() << F("; satellites: ") << gps.satellites.value();
-  DEBUG().no_newline().write('\r').write('\n');
-}
 

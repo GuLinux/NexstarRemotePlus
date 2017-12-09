@@ -25,7 +25,6 @@ private:
   void gps_debug(const Command &command);
   void bluetooth_name(const Command &command);
   void bluetooth_pin(const Command &command);
-  void change_tz(const Command &command);
   void time(const Command &command);
   void bluetooth_settings_changed();
   void log_level(const Command &command);

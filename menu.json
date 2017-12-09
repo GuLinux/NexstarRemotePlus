@@ -1,0 +1,212 @@
+{
+  "uid": "MENU_ROOT",
+  "label": "",
+  "children": [
+    {
+      "uid": "MENU_GPS",
+      "label": "GPS",
+      "children": [
+        {
+          "uid": "MENU_GPS_WAKEUP",
+          "label": "GPS Wakeup",
+          "on_enter": "ACTION_GPS_WAKEUP"
+        },
+        {
+          "uid": "MENU_GPS_TIMEOUT",
+          "label": "GPS Timeout",
+          "children": [
+            {
+              "uid": "MENU_GPS_TIMEOUT_5M",
+              "label": "GPS Timeout:\\n5 minutes",
+              "on_enter": "ACTION_SET_GPS_TIMEOUT_5M"
+            },
+            {
+              "uid": "MENU_GPS_TIMEOUT_10M",
+              "label": "GPS Timeout:\\n10 minutes",
+              "on_enter": "ACTION_SET_GPS_TIMEOUT_10M"
+            },
+            {
+              "uid": "MENU_GPS_TIMEOUT_20M",
+              "label": "GPS Timeout:\\n20 minutes",
+              "on_enter": "ACTION_SET_GPS_TIMEOUT_20M"
+            },
+            {
+              "uid": "MENU_GPS_TIMEOUT_40M",
+              "label": "GPS Timeout:\\n40 minutes",
+              "on_enter": "ACTION_SET_GPS_TIMEOUT_40M"
+            },
+            {
+              "uid": "MENU_GPS_TIMEOUT_INFINITE",
+              "label": "GPS Timeout:\\nNo timeout",
+              "on_enter": "ACTION_SET_GPS_TIMEOUT_INFINITE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uid": "MENU_NEXSTAR",
+      "label": "Nexstar",
+      "children": [
+        {
+          "uid": "MENU_NEXSTAR_SYNC",
+          "label": "Nexstar Sync",
+          "on_enter": "ACTION_NEXSTAR_SYNC"
+        }
+      ]
+    },
+    {
+      "uid": "MENU_DATE_TIME",
+      "label": "Date/Time",
+      "children": [
+        {
+          "uid": "MENU_SET_TIMEZONE",
+          "label": "Set timezone",
+          "children": [
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_M12",
+              "label": "Set Timezone:\\nGMT-12",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_M12"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_M11",
+              "label": "Set Timezone:\\nGMT-11",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_M11"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_M10",
+              "label": "Set Timezone:\\nGMT-10",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_M10"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_M09",
+              "label": "Set Timezone:\\nGMT-09",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_M09"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_M08",
+              "label": "Set Timezone:\\nGMT-08",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_M08"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_M07",
+              "label": "Set Timezone:\\nGMT-07",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_M07"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_M06",
+              "label": "Set Timezone:\\nGMT-06",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_M06"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_M05",
+              "label": "Set Timezone:\\nGMT-05",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_M05"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_M04",
+              "label": "Set Timezone:\\nGMT-04",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_M04"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_M03",
+              "label": "Set Timezone:\\nGMT-03",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_M03"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_M02",
+              "label": "Set Timezone:\\nGMT-02",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_M02"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_M01",
+              "label": "Set Timezone:\\nGMT-01",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_M01"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_P00",
+              "label": "Set Timezone:\\nGMT+00",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_P00"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_P01",
+              "label": "Set Timezone:\\nGMT+01",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_P01"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_P02",
+              "label": "Set Timezone:\\nGMT+02",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_P02"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_P03",
+              "label": "Set Timezone:\\nGMT+03",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_P03"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_P04",
+              "label": "Set Timezone:\\nGMT+04",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_P04"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_P05",
+              "label": "Set Timezone:\\nGMT+05",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_P05"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_P06",
+              "label": "Set Timezone:\\nGMT+06",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_P06"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_P07",
+              "label": "Set Timezone:\\nGMT+07",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_P07"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_P08",
+              "label": "Set Timezone:\\nGMT+08",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_P08"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_P09",
+              "label": "Set Timezone:\\nGMT+09",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_P09"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_P10",
+              "label": "Set Timezone:\\nGMT+10",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_P10"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_P11",
+              "label": "Set Timezone:\\nGMT+11",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_P11"
+            },
+            {
+              "uid": "MENU_SET_TIMEZONE_GMT_P12",
+              "label": "Set Timezone:\\nGMT+12",
+              "on_enter": "ACTION_SET_TIMEZONE_GMT_P12"
+            }
+          ]
+        },
+        {
+          "uid": "MENU_SET_DAYLIGHT_SAVING",
+          "label": "Set Daylight Saving",
+          "children": [
+            {
+              "uid": "MENU_SET_DAYLIGHT_SAVING_OFF",
+              "label": "Daylight Saving:\\nOFF",
+              "on_enter": "ACTION_SET_DAYLIGHT_SAVING_OFF"
+            },
+            {
+              "uid": "MENU_SET_DAYLIGHT_SAVING_ON",
+              "label": "Daylight Saving:\\nON",
+              "on_enter": "ACTION_SET_DAYLIGHT_SAVING_ON"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

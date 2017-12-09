@@ -13,6 +13,5 @@ public:
   void update();
 private:
   Adafruit_SSD1306 oled;
-  GFXcanvas1 osd_canvas;
 };
 
