@@ -33,6 +33,8 @@ if [[ "$OS" == "Darwin" ]]; then
 	TOOLS_FLAGS="$TOOLS_FLAGS $( check_path tools "$HOME/Library/Arduino15/packages")"
 fi
 
+# define your board options in board.sh
+. board.sh
 
 cat >Makefile <<EOF
 USB_PORT ?= ${DEFAULT_USB_PORT}
@@ -44,6 +46,8 @@ HARDWARE_FLAGS := $HARDWARE_FLAGS
 LIBRARIES_FLAGS := $LIBRARIES_FLAGS
 TOOLS_FLAGS := $TOOLS_FLAGS
 STM32_OS_DIR := $STM32_OS_DIR
+BOARD_FQBN := $BOARD_FQBN
+BOARD_VID_PID := $BOARD_VID_PID
 EOF
 
 cat Makefile.in >> Makefile

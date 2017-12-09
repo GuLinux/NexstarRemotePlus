@@ -16,9 +16,11 @@ icons/icons.h: icons/*.png
 GuLinux-Commons-Libs: GuLinux-Commons/Arduino/GuLinux-Arduino-Utils/*
 
 build: build_dir *.cpp *.h *.ino icons/icons.h menu.h GuLinux-Commons-Libs
-	$(ARDUINO_BUILDER) -compile -logger=human $(HARDWARE_FLAGS) $(TOOLS_FLAGS) $(LIBRARIES_FLAGS) -libraries GuLinux-Commons/Arduino -fqbn=Arduino_STM32:STM32F1:mapleMini:bootloader_version=original,cpu_speed=speed_72mhz,opt=osstd -vid-pid=0X1EAF_0X0004 -ide-version=10805 -build-path $(BUILD_DIR) -warnings=default -build-cache $(CACHE_DIR) -prefs=build.warn_data_percentage=75 *.ino
+	$(ARDUINO_BUILDER) -compile -logger=human $(HARDWARE_FLAGS) $(TOOLS_FLAGS) $(LIBRARIES_FLAGS) -libraries GuLinux-Commons/Arduino -fqbn=$(BOARD_FQBN) -vid-pid=$(BOARD_VID_PID) -ide-version=10805 -build-path $(BUILD_DIR) -warnings=default -build-cache $(CACHE_DIR) -prefs=build.warn_data_percentage=75 *.ino
 
-upload: build
+upload: build upload_maple
+
+upload_maple: build
 	$(ARDUINO_HOME)/hardware/Arduino_STM32/tools/$(STM32_OS_DIR)/maple_upload $(USB_PORT) 1 1EAF:0003 $(BUILD_DIR)/*.ino.bin 
 
 clean:
