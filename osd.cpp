@@ -31,6 +31,7 @@ namespace {
         break;
 
     }
+    TRACE() << F("set_gps_timeout: minutes=") << minutes << F(", setting.value=") << setting.value << F(", setting.uid=") << setting.uid;
     Settings::instance()->gps_timeout(setting);
     if(setting.value> 0) {
       OSD::instance()->show_message(String("GPS Timeout set to ") + setting.value/60 + " minutes");
@@ -115,11 +116,13 @@ String OSD::render() {
 }
 
 void OSD::on_click() {
+  TRACE() << F("on_click: entry=") << menu_entry().id << F(", on_next=") << menu_entry().on_next;
   _menu_index = menu_entry().on_next;
   clear_message();
 }
 
 void OSD::on_triple_click() {
+  TRACE() << F("on_triple_click: entry=") << menu_entry().id << F(", on_back=") << menu_entry().on_back;
   _menu_index = menu_entry().on_back;
   clear_message();
 }
@@ -129,6 +132,7 @@ void OSD::on_double_click() {
   auto entry = menu_entry();
   _menu_index = 0;
   uint8_t code = entry.on_enter;
+  TRACE() << F("on_double_click: entry=") << entry.id << F(", on_enter=") << static_cast<int>(code);
   if(code >= ACTIONS_BASE) {
     action(code);
   } else {
@@ -143,6 +147,7 @@ void OSD::on_double_click() {
 }
 
 void OSD::on_long_click() {
+  TRACE() << F("on_long_click");
   _menu_index = 0;
   clear_message();
 }

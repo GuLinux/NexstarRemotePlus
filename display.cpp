@@ -78,7 +78,6 @@ void Display::begin() {
   oled.setCursor(0,CUSTOM_FONT_Y_OFFSET);
   oled.print("Nexstar\nRemote+");
   oled.display();
-delay(3000);
 }
 
 

@@ -7,7 +7,7 @@ OS=$( uname )
 if [[ "$OS" == "Linux" ]]; then
   ARDUINO_PATH=/usr/share/arduino
   ARDUINO_HOME="$HOME/Arduino"
-  STM32_OS_DIR=linux64
+  STM32_OS_DIR=linux
 elif [[ "$OS" == "Darwin" ]]; then
 	ARDUINO_PATH="/Applications/Arduino.app/Contents/Java"
 	ARDUINO_HOME="$HOME/Documents/Arduino"

@@ -21,7 +21,7 @@ build: build_dir *.cpp *.h *.ino icons/icons.h menu.h GuLinux-Commons-Libs
 upload: build upload_maple
 
 upload_maple: build
-	$(ARDUINO_HOME)/hardware/Arduino_STM32/tools/$(STM32_OS_DIR)/maple_upload $(USB_PORT) 1 1EAF:0003 $(BUILD_DIR)/*.ino.bin 
+	$(ARDUINO_HOME)/hardware/Arduino_STM32/tools/$(STM32_OS_DIR)/maple_upload $(USB_PORT) 2 1EAF:0003 $(BUILD_DIR)/*.ino.bin 
 
 clean:
 	rm -rf $(BUILD_DIR) $(CACHE_DIR)

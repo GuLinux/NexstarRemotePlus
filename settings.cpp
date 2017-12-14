@@ -3,7 +3,7 @@
 #include "rtc.h"
 #include "menu.h"
 
-static const char *default_version = "v1.0.7";
+static const char *default_version = "v1.0.8";
 
 Settings::Settings(): Singleton<Settings>(this) {
 }

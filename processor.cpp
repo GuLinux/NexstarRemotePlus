@@ -68,6 +68,7 @@ void Processor::gps_power_management() {
   bool gps_timeout_expired = _gps_expire > 0 && millis() > _gps_expire;
 
   if(! GPS::instance()->suspended() && ( has_enough_fixes || gps_timeout_expired )  )  {
+    TRACE() << F("Suspending GPS: has_enough_fixes=") << has_enough_fixes << F(", gps_timeout_expired=") << gps_timeout_expired;
     GPS::instance()->sleep();
   }
 }
@@ -94,8 +95,8 @@ void Processor::gps_fix_management() {
     return; // We got enough gps fixes already
   if(millis() - _gps_last_fix < GPS_FIXES_EVERY)
     return; // Collect fixes every GPS_FIXES_EVERY
-  if(last_fixes_cnt == 0 && _gps_expire != 0)
-    _gps_expire += ((GPS_FIXES_AVERAGE_COUNT+2) * GPS_FIXES_EVERY); // give GPS enough time to collect GPS_FIXES_AVERAGE_COUNT samples
+  //if(last_fixes_cnt == 0 && _gps_expire != 0)
+  //  _gps_expire += ((GPS_FIXES_AVERAGE_COUNT+2) * GPS_FIXES_EVERY); // give GPS enough time to collect GPS_FIXES_AVERAGE_COUNT samples
   last_fixes[last_fixes_cnt++] = GPS::instance()->get_fix();
   _gps_last_fix = millis();
   auto fix = get_average_fix(last_fixes, last_fixes_cnt);
@@ -110,6 +111,7 @@ void Processor::set_gps_expire() {
   } else {
     _gps_expire = 0;
   }
+  TRACE() << millis() << F("- GPS timeout=") << gps_timeout << F(", expire set to ") << _gps_expire;
 }
 
 void Processor::nexstar_sync() {

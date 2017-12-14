@@ -45,7 +45,7 @@ void GPS::close() {
 void GPS::process() {
   while (_port.available()) {
     auto c = _port.read();
-    TRACE().no_newline().write(c);
+    TRACE().no_newline().write(static_cast<char>(c));
     if(gps.encode(c)) {
       syncDateTime();
     }
