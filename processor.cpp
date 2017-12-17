@@ -26,16 +26,17 @@ void debug_status() {
   if(millis() - last_dbg < 2000)
     return;
   last_dbg = millis();
-  DEBUG().no_newline() << F("GPS: ");
+  DEBUG().no_newline() << F("\r\n* STATUS: GPS: ");
   if(GPS::instance()->has_fix()) {
     auto fix = GPS::instance()->get_fix();
     DEBUG().no_newline() << F("lat=") << fix.latitude << F(", lng=") << fix.longitude;
   } else {
-    DEBUG().no_newline() << F("no fix");
+    DEBUG().no_newline() << F("N/A");
   }
-  DEBUG().no_newline() << F(", GPS time: ") << (GPS::instance()->has_time() ? F("YES") : F("NO"));
+  DEBUG().no_newline() << F(", GPS time: ") << (GPS::instance()->has_time() ? 'Y' : 'N');
+  DEBUG().no_newline() << F(", last fix: lat=") << Settings::instance()->last_fix().latitude << F(", lng=") << Settings::instance()->last_fix().longitude ;
   DEBUG().no_newline() << F(", vbat=") << Battery::instance()->millivolts() << F(", ") << Battery::instance()->percentage()
-    << F(", RTC UTC time: ") << RTC::instance()->utc() << F(", local time: ") << RTC::instance()->localtime();
+    << F(", RTC: UTC=") << RTC::instance()->utc() << F(", local=") << RTC::instance()->localtime();
   DEBUG().no_newline().write('\r').write('\n');
 }
 
@@ -47,7 +48,7 @@ void Processor::loop() {
 
   nexstar_sync();
   Commands::instance()->read();
-  Nexstar::instance()->port().write(Commands::instance()->buffer(), Commands::instance()->buffer_len());
+  Nexstar::instance()->write(Commands::instance()->buffer(), Commands::instance()->buffer_len());
   Nexstar::instance()->read_to(*PCStream::instance());
   OSD::instance()->tick();
   Display::instance()->update();
@@ -77,13 +78,12 @@ GPS::Fix get_average_fix(GPS::Fix *fixes, uint8_t count) {
   if(count == 0) {
     return {};
   }
-  double lat = 0;
-  double lng = 0;
+  GPS::Fix average{0, 0};
   for(uint8_t i=0; i<count; i++) {
-    lat += fixes[i].latitude;
-    lng += fixes[i].longitude;
+    TRACE() << F("get_average_fix(count=") << count << F("): last_fixes[") << i << F("] = ") << fixes[i].latitude << F(", ") << fixes[i].longitude;
+    average += fixes[i];
   }
-  GPS::Fix average{ lat/ static_cast<double>(count), lng / static_cast<double>(count) };
+  average /= count;
   DEBUG() << "Average of " << count << " fixes: " << average.latitude << ", " << average.longitude;
   return average;
 }

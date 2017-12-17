@@ -16,6 +16,9 @@ public:
       Fix(double lat, double lng) : latitude(lat), longitude(lng), valid(true) {}
       Fix() : valid(false) {}
       inline bool operator==(const Fix &o) const { return o.latitude == latitude && o.longitude == longitude && o.valid == valid; }
+      // operators for calculating average fix
+      inline Fix &operator+=(const Fix &other) { latitude += other.latitude; longitude += other.longitude; return *this; }
+      inline Fix &operator/=(double ratio) { latitude /= ratio; longitude /= ratio; return *this; }
   };
   GPS(HardwareSerial &port);
   void open();

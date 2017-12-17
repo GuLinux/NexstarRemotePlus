@@ -9,6 +9,7 @@ public:
   Nexstar(HardwareSerial &port);
   inline HardwareSerial &port() { return _port; }
   void read_to(Stream &stream);
+  void write(const uint8_t *buffer, int size);
   void setup();
   bool set_time();
   bool set_gps_info();

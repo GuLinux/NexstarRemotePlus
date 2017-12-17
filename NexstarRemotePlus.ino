@@ -11,6 +11,7 @@
 #include "osd.h"
 #include "buttons.h"
 #include "battery.h"
+#include "blink_led.h"
 
 #include "logger.h"
 //#define BUTTON_PIN 3
@@ -40,12 +41,14 @@ OSD osd;
 
 
 void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);
+  BlinkLed blink_led;
   Serial.begin(9600);
   rtc.setup();
   settings.load();
   logger.set_level(static_cast<Logger::Level>(settings.log_level()));
   DEBUG() << F("Starting setup sequence");
-  pinMode(LED_BUILTIN, OUTPUT);
+
 
 
   bluetooth.setup();
@@ -55,7 +58,7 @@ void setup() {
   DEBUG() << F("Starting up NexStarRemote+");
   battery.setup();
   
-  digitalWrite(LED_BUILTIN, LOW);
+
 
 
  // if(timeStatus()!= timeSet)
@@ -64,8 +67,6 @@ void setup() {
   gps.resume();
   nexstar.setup();
   processor.setup();
-  digitalWrite(LED_BUILTIN, HIGH);
-  Serial.setTimeout(2000);
   DEBUG() << F("Setup finished");
 }
 

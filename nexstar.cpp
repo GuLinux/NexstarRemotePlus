@@ -2,6 +2,7 @@
 #include "settings.h"
 #include "TimeLib.h"
 #include "logger.h"
+#include "blink_led.h"
 
 Nexstar::Nexstar(HardwareSerial &port) : Singleton<Nexstar>(this), _port(port)
 {
@@ -9,7 +10,15 @@ Nexstar::Nexstar(HardwareSerial &port) : Singleton<Nexstar>(this), _port(port)
 
 void Nexstar::read_to(Stream &stream) {
   if(_port.available()) {
+    BlinkLed blink_led;
     stream.write(_port.read());
+  }
+}
+
+void Nexstar::write(const uint8_t *buffer, int size) {
+  if(size) {
+    BlinkLed blink_led;
+    _port.write(buffer, size);
   }
 }
 

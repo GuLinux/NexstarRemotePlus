@@ -92,12 +92,8 @@ void GPS::syncDateTime() {
     static_cast<uint8_t>(gps.date.year() - 1970),
   };
   time_t t = makeTime(datetime);
-  /*
-  //Serial.print("UNIX time: "); Serial.println(t);
-  RTC.set(t);
-  setTime(t);
-  */
-  RTC::instance()->set_time(t);
+  if( t != RTC::instance()->utc())
+    RTC::instance()->set_time(t);
 }
 
 
