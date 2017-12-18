@@ -66,10 +66,15 @@ void Processor::gps_power_management() {
     return;
   }
   bool has_enough_fixes = last_fixes_cnt >= GPS_FIXES_AVERAGE_COUNT;
+  bool timeout_not_enough_fixes = last_fixes_cnt > 0 && (millis() - _gps_last_fix) > GPS_FIXES_EVERY * 10;
   bool gps_timeout_expired = _gps_expire > 0 && millis() > _gps_expire;
 
   if(! GPS::instance()->suspended() && ( has_enough_fixes || gps_timeout_expired )  )  {
-    TRACE() << F("Suspending GPS: has_enough_fixes=") << has_enough_fixes << F(", gps_timeout_expired=") << gps_timeout_expired;
+    TRACE() 
+      << F("Suspending GPS: has_enough_fixes=") << has_enough_fixes 
+      << F(", gps_timeout_expired=") << gps_timeout_expired
+      << F(", timeout_not_enough_fixes=") << timeout_not_enough_fixes
+      << F(", fixes count: ") << last_fixes_cnt;
     GPS::instance()->sleep();
   }
 }
